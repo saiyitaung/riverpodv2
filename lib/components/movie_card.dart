@@ -4,7 +4,8 @@ import 'package:riverpodv2/utils/myutils.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
-  const MovieCard({required this.movie, super.key});
+  final double width;
+  const MovieCard({required this.movie,this.width=160, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class MovieCard extends StatelessWidget {
       children: [
         Container(
           height: size.height * .29,
-          width: 160,
+          width: width,
           margin: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
@@ -39,7 +40,7 @@ class MovieCard extends StatelessWidget {
         ),
         Container(
           height: (size.height * .37) - (size.height * .29),
-          width: 160,
+          width: width,
           
           decoration: const BoxDecoration(
             color: Colors.black54,

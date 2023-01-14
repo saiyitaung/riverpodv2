@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/carouselslider_card.dart';
+import 'package:riverpodv2/components/drawerwidget.dart';
 import 'package:riverpodv2/components/movie_card.dart';
 import 'package:riverpodv2/components/tvshow_card.dart';
 import 'package:riverpodv2/providers/actors_future_provider.dart';
@@ -60,7 +61,7 @@ class MovieHome extends ConsumerWidget {
             height: size.height * .27,
             width: size.width,
             child: moviesRef.when(data: (data) {
-              debugPrint('${data[0].id}');
+            //  debugPrint('${data[0].id}');
               return CarouselSliderCard(movies: data);
             }, error: (e, st) {
               debugPrint(e.toString());
@@ -201,12 +202,8 @@ class MovieHome extends ConsumerWidget {
           ),
         ]),
       ),
-      drawer: Drawer(
-        child: Container(
-            child: Column(
-          children: [const Text("Menu")],
-        )),
-      ),
+      drawer: DrawerWidgets(),
+      
     );
   }
 }
