@@ -6,11 +6,9 @@ import 'package:riverpodv2/models/moviedetail.dart';
 import 'package:riverpodv2/utils/readconfig.dart';
 import 'package:riverpodv2/utils/base.dart';
 
-final upCommingMovieProvider =
+final moviesProvider =
     Provider((ref) => MovieRepository(dio: Dio(), api: Config.getAPIConfig()));
-final popularMovieProvider =
-    Provider((ref) => MovieRepository(dio: Dio(), api: Config.getAPIConfig()));
-
+ 
 class MovieRepository {
   Dio dio;
   APIConfig api;

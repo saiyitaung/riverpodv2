@@ -1,6 +1,7 @@
 
 class APIConfig {
   final String? key;
+  
   APIConfig({required this.key});
 }
 class Config{

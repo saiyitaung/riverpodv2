@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/movie_card.dart';
+import 'package:riverpodv2/components/rate_bar.dart';
 import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
@@ -31,7 +32,7 @@ class MovieDetailUI extends ConsumerWidget {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage("${bigImageURL}/${data.backdropPath}"),
+                  image: NetworkImage("${bigImageURL}/${data.posterPath}"),
                 ),
               ),
               child: Stack(children: [
@@ -62,6 +63,7 @@ class MovieDetailUI extends ConsumerWidget {
                   ]),
                 ),
                  Positioned(
+                  bottom: 50,
                   child: SizedBox(
                     width: size.width,
                     child: Center(
@@ -71,7 +73,6 @@ class MovieDetailUI extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  bottom: 50,
                 ),
                 Positioned(
                   bottom: 20,
@@ -88,67 +89,7 @@ class MovieDetailUI extends ConsumerWidget {
                 
               ]),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade900,
-                boxShadow: [
-                  BoxShadow(
-                      blurRadius: 1, spreadRadius: 1, offset: Offset(0, 1))
-                ],
-              ),
-              height: 80,
-              width: size.width,
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(data.voteCount.toString()),
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Text("Rates")
-                      ],
-                    )),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                          ),
-                          SizedBox(
-                            height: 3,
-                          ),
-                          Text(data.voteAverage.toStringAsFixed(1)),
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.favorite,
-                            color: Colors.yellow.withOpacity(.5),
-                          ),
-                          SizedBox(
-                            height: 3,
-                          ),
-                          Text("Rate")
-                        ],
-                      ),
-                    ),
-                  ]),
-            ),
+            RateBar(width: size.width, votes: data.voteCount, averageVote: data.voteAverage),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                   child: Container(
@@ -170,7 +111,7 @@ class MovieDetailUI extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.all(10),
                     child: Text(
                       "Overview",
@@ -183,8 +124,7 @@ class MovieDetailUI extends ConsumerWidget {
                       child: Text(
                         data.overview ?? "",
                         textAlign: TextAlign.justify,
-                      )),
-                 
+                      )),                 
                   SizedBox(
                     height: 10,
                   ),
@@ -211,17 +151,7 @@ class MovieDetailUI extends ConsumerWidget {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: ((context) => ActorDetailUI(
-                                              actor: Actor(
-                                                  profilePath:
-                                                      data[index].profilePath ??
-                                                          "",
-                                                  id: data[index].id,
-                                                  name: data[index].name,
-                                                  adult: data[index].adult,
-                                                  popularity:
-                                                      data[index].popularity),
-                                            ))));
+                                        builder: ((context) => ActorDetailUI(actorID: data[index].id,))));
                               },
                               child: ActorCard(
                                 actor: Actor(
@@ -282,7 +212,7 @@ class MovieDetailUI extends ConsumerWidget {
                         child: Text("Oop!"),
                       );
                     }, loading: () {
-                      return Center(
+                      return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }),
@@ -294,11 +224,11 @@ class MovieDetailUI extends ConsumerWidget {
         )),
       );
     }, error: (e, _) {
-      return Center(
+      return const Center(
         child: Text("Oop!"),
       );
     }, loading: () {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }));

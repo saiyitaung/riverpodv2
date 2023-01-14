@@ -9,26 +9,25 @@ import 'package:riverpodv2/ui/movie_detail.dart';
 import 'package:riverpodv2/utils/base.dart';
 
 class ActorDetailUI extends ConsumerWidget {
-  final Actor actor;
-  const ActorDetailUI({required this.actor, super.key});
+  final int actorID;
+  const ActorDetailUI({required this.actorID, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final movieCastsRef= ref.watch(moviesCastByActorFutureProvider(actor.id));
-    final actorDetailRef = ref.watch(actorDetailFutureProvider(actor.id));
+    final movieCastsRef = ref.watch(moviesCastByActorFutureProvider(actorID));
+    final actorDetailRef = ref.watch(actorDetailFutureProvider(actorID));
     final size = MediaQuery.of(context).size;
-    debugPrint(actor.id.toString());
+   // debugPrint(actor.id.toString());
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: actorDetailRef.when(data: (actorDetail){
-            return Column(
+            child: actorDetailRef.when(data: (actorDetail) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: size.height * .65,
                 width: size.width,
                 decoration: BoxDecoration(
-               
                     image: DecorationImage(
                         fit: BoxFit.cover,
                         image: FadeInImage(
@@ -37,17 +36,18 @@ class ActorDetailUI extends ConsumerWidget {
                             return Image(
                                 image: AssetImage("assets/img/noimage.png"));
                           }),
-                          image:
-                              NetworkImage("${bigImageURL}/${actorDetail.profilePath}"),
+                          image: NetworkImage(
+                              "${bigImageURL}/${actorDetail.profilePath}"),
                         ).image)),
                 child: Stack(children: [
-                   Container(
-                     height: size.height * .65,
-                width: size.width,
+                  Container(
+                    height: size.height * .65,
+                    width: size.width,
                     decoration: BoxDecoration(
-                         gradient: LinearGradient(colors: [Colors.black12,Colors.black54],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter),
+                      gradient: LinearGradient(
+                          colors: [Colors.black12, Colors.black54],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter),
                     ),
                   ),
                   Positioned(
@@ -57,7 +57,6 @@ class ActorDetailUI extends ConsumerWidget {
                       Navigator.pop(context);
                     },
                   )),
-                 
                   Positioned(
                     bottom: 60,
                     child: SizedBox(
@@ -68,15 +67,18 @@ class ActorDetailUI extends ConsumerWidget {
                             Text(
                               actorDetail.name.split(" ")[0],
                               style: TextStyle(
-                                fontFamily: GoogleFonts.getFont("Monoton").fontFamily,
-                                  fontSize: 36, fontWeight: FontWeight.w700),
+                                  fontFamily:
+                                      GoogleFonts.getFont("Monoton").fontFamily,
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.w700),
                             ),
-                            
                             Text(
                               actorDetail.name.split(" ")[1],
                               style: TextStyle(
-                                fontFamily: GoogleFonts.getFont("Monoton").fontFamily,
-                                  fontSize: 50, fontWeight: FontWeight.w800),
+                                  fontFamily:
+                                      GoogleFonts.getFont("Monoton").fontFamily,
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.w800),
                             ),
                           ],
                         ),
@@ -90,9 +92,9 @@ class ActorDetailUI extends ConsumerWidget {
                       height: 60,
                       width: size.width,
                       decoration: BoxDecoration(
-                          color: Colors.grey.shade900.withOpacity(.7),
-                          borderRadius: BorderRadius.circular(10),
-                           ),
+                        color: Colors.grey.shade900.withOpacity(.7),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -106,29 +108,40 @@ class ActorDetailUI extends ConsumerWidget {
                                 color: Colors.yellow,
                                 size: 20,
                               ),
-                              SizedBox(height: 5,),
-
-                              Text("${actorDetail.popularity.toStringAsFixed(1)}"),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                  "${actorDetail.popularity.toStringAsFixed(1)}"),
                             ],
                           )),
                           Flexible(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Flexible(child: Text("birth place")),
-                              SizedBox(height: 2,),
-                              Flexible(child: Text("${actorDetail.placeOfBirth}",textAlign: TextAlign.center,)),
+                              SizedBox(
+                                height: 2,
+                              ),
+                              Flexible(
+                                  child: Text(
+                                "${actorDetail.placeOfBirth}",
+                                textAlign: TextAlign.center,
+                              )),
                             ],
                           )),
                           Flexible(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [Text("birthday"),
-                              SizedBox(height: 5,),
-                            
-                             Text("${actorDetail.birthday}")],
+                            children: [
+                              Text("birthday"),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text("${actorDetail.birthday}")
+                            ],
                           ))
                         ],
                       ),
@@ -140,68 +153,84 @@ class ActorDetailUI extends ConsumerWidget {
                 height: 10,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
-                  textAlign: TextAlign.justify,
-                    "${actorDetail.biography}"),
+                    textAlign: TextAlign.justify, "${actorDetail.biography}"),
               ),
               SizedBox(
                 height: 10,
               ),
               Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      height: 50,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Known for",                            
-                              style: TextStyle(fontSize: 20,
-                              fontFamily: GoogleFonts.getFont("Mitr").fontFamily,
-                              ),
-                            ),
-                          ]),
-                    ),
-                    SizedBox(
-                      height: size.height * .37,
-                      child: movieCastsRef.when(data: (data) {
-                        return ListView.builder(
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: ((context) => MovieDetailUI(
-                                            movieId: data[index].id))));
-                              },
-                              child: MovieCard(movie: Movie(id: data[index].id, originalLanguage: "originalLanguage", originalTitle: data[index].title, overview: "overview", popularity: 5.0, adult: false, genreIds: [0], title: data[index].title, video: false, voteAverage: 5.6, votecount: 0,backdropPath: data[index].backdropPath)),
-                            );
-                          },
-                          itemCount: data.length,
-                          scrollDirection: Axis.horizontal,
-                        );
-                      }, error: (e, _) {
-                        return const Center(
-                          child: Text("Oop!"),
-                        );
-                      }, loading: () {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }),
-                    ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                height: 50,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Known for",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: GoogleFonts.getFont("Mitr").fontFamily,
+                        ),
+                      ),
+                    ]),
+              ),
+              SizedBox(
+                height: size.height * .37,
+                child: movieCastsRef.when(data: (data) {
+                  return ListView.builder(
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) =>
+                                      MovieDetailUI(movieId: data[index].id))));
+                        },
+                        child: MovieCard(
+                            movie: Movie(
+                                id: data[index].id,
+                                originalLanguage: "originalLanguage",
+                                originalTitle: data[index].title,
+                                overview: "overview",
+                                popularity: 5.0,
+                                adult: false,
+                                genreIds: [0],
+                                title: data[index].title,
+                                video: false,
+                                voteAverage: 5.6,
+                                votecount: 0,
+                                backdropPath: data[index].backdropPath)),
+                      );
+                    },
+                    itemCount: data.length,
+                    scrollDirection: Axis.horizontal,
+                  );
+                }, error: (e, _) {
+                  return const Center(
+                    child: Text("Oop!"),
+                  );
+                }, loading: () {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }),
+              ),
             ],
           );
-          }, error: (e,st){
-            debugPrint(st.toString());
-            debugPrint(e.toString());
-             return Center(child: Text("Oop!"),);
-          }, loading: (){
-            return Center(child: CircularProgressIndicator(),);
-          })
-        ),
+        }, error: (e, st) {
+          debugPrint(st.toString());
+          debugPrint(e.toString());
+          return Center(
+            child: Text("Oop!"),
+          );
+        }, loading: () {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        })),
       ),
     );
   }

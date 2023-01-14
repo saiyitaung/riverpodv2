@@ -1,13 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpodv2/models/cast.dart';
-import 'package:riverpodv2/models/moviedetail.dart';
 import 'package:riverpodv2/models/tvshow.dart';
 import 'package:riverpodv2/models/tvshowdetail.dart';
 import 'package:riverpodv2/utils/readconfig.dart';
 import 'package:riverpodv2/utils/base.dart';
 
-final topRatedTVShowProvider =
+final tvShowProvider =
     Provider((ref) => TVShowRepo(dio: Dio(), apiConfig: Config.getAPIConfig()));
 
 class TVShowRepo {

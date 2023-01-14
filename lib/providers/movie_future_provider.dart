@@ -6,13 +6,12 @@ import 'package:riverpodv2/utils/readconfig.dart';
  
 
 final popularsMovieFutureProvider = FutureProvider((ref){
-  final movieRef= ref.watch(popularMovieProvider);
+  final movieRef= ref.watch(moviesProvider);
   return movieRef.populars();
 });
 
 final upCommingMovieFutureProvider= FutureProvider((ref){
-  final movieRef = ref.watch(upCommingMovieProvider);
-
+  final movieRef = ref.watch(moviesProvider);
   return movieRef.upComming();
 });
 
