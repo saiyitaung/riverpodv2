@@ -5,7 +5,7 @@ class TVShow {
   String? backdropPath;
   double voteAverage;
   String overView;
-  String firstAirDate;
+  String? firstAirDate;
   List<String> originCountry;
   List<int> genreIds;
   String originalLanguage;
@@ -19,7 +19,7 @@ class TVShow {
       this.backdropPath,
       required this.voteAverage,
       required this.overView,
-      required this.firstAirDate,
+        this.firstAirDate,
       required this.originCountry,
       required this.genreIds,
       required this.originalLanguage,

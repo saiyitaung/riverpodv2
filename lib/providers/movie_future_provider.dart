@@ -23,18 +23,28 @@ final nowplayingMoiveFutureProvider = FutureProvider((ref){
   return movieRef.nowPlaying();
 });
 
+final searchMovieFutureProvider = FutureProvider.family((ref,String q){
+  final movieRef = ref.watch(moviesProvider);
+  return movieRef.search(q);
+});
+
+final movieIdFutureProvider = FutureProvider.family((ref,int movieID){
+  final movieRef = ref.watch(moviesProvider);
+  return movieRef.youtubeTrailerKey(movieID);
+});
 
 final movieDetailFutureProvider = FutureProvider.family((ref,int movieID){
-  final movieRef = MovieRepository(dio:Dio(),api: Config.getAPIConfig());
+  final movieRef = ref.watch(moviesProvider);
   return movieRef.movieDetail(movieID);
 });
 
 final similarMoviesFutureProvider = FutureProvider.family((ref,int movieId){
-  final movieRef= MovieRepository(dio: Dio(),api: Config.getAPIConfig());
+  final movieRef= ref.watch(moviesProvider);
   return movieRef.similarMovies(movieId);
 });
 
 final castsFutureProvider = FutureProvider.family((ref,int movieId){
- final movieRef= MovieRepository(dio: Dio(),api: Config.getAPIConfig());
+ final movieRef= ref.watch(moviesProvider);
  return movieRef.getCastsBytMovieID(movieId);
 });
+

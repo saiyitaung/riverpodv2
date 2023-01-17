@@ -10,6 +10,7 @@ import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/providers/tvshow_future_provider.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/ui/movie_detail.dart';
+import 'package:riverpodv2/ui/movie_ui.dart';
 import 'package:riverpodv2/ui/tvshow_detail.dart';
 import 'package:riverpodv2/utils/myutils.dart';
 
@@ -53,7 +54,9 @@ class MovieHome extends ConsumerWidget {
                   "Upcoming movies".toUpperCase(),
                   style: const TextStyle(fontSize: 20),
                 ),
-                TextButton(onPressed: () {}, child: const Text("more"))
+                TextButton(onPressed: () {
+                  goTo(context, MoviesUI());
+                }, child: const Text("more"))
               ],
             ),
           ),
@@ -85,7 +88,7 @@ class MovieHome extends ConsumerWidget {
                   "popular movie".toUpperCase(),
                   style: const TextStyle(fontSize: 20),
                 ),
-                TextButton(onPressed: () {}, child: const Text("more"))
+                TextButton(onPressed: () {}, child: const SizedBox())
               ],
             ),
           ),
@@ -124,7 +127,7 @@ class MovieHome extends ConsumerWidget {
                   "TV Show".toUpperCase(),
                   style: const TextStyle(fontSize: 20),
                 ),
-                TextButton(onPressed: () {}, child: const Text("more"))
+                TextButton(onPressed: () {}, child: const SizedBox())
               ],
             ),
           ),
@@ -166,7 +169,7 @@ class MovieHome extends ConsumerWidget {
                   "popular Actors & Actress".toUpperCase(),
                   style: const TextStyle(fontSize: 20),
                 ),
-                TextButton(onPressed: () {}, child: const Text("more"))
+                TextButton(onPressed: () {}, child: const SizedBox())
               ],
             ),
           ),

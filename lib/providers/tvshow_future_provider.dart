@@ -18,7 +18,10 @@ final upComingTVShowFutureProvider = FutureProvider((ref) {
   final tvRef = ref.watch(tvShowProvider);
   return tvRef.upComing();
 });
-
+final searchTvShowsFutureProvider = FutureProvider.family((ref,String query){
+  final tvRef =ref.watch(tvShowProvider);
+  return tvRef.searchTVShows(query);
+});
 
 
 final tvDetailFutureProvider = FutureProvider.family((ref,int tvShowID){

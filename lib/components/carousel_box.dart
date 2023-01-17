@@ -12,6 +12,7 @@ class CarouselBox extends StatelessWidget {
       width: size.width * .8,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
+           
           image: DecorationImage(
               fit: BoxFit.cover,
               image: movie.backdropPath == null
@@ -36,6 +37,9 @@ class CarouselBox extends StatelessWidget {
             height: 80,
             padding: const EdgeInsets.only(left: 20),
             decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(9),
+                          bottomRight: Radius.circular(9)),
                 gradient: LinearGradient(
                     colors: [Colors.black26, Colors.black87],
                     begin: Alignment.topCenter,

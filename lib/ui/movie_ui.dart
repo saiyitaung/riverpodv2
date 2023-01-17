@@ -21,7 +21,11 @@ class MoviesUI extends ConsumerWidget {
         title: Text("Movies"),
         elevation: 0,
         actions: [
-          Icon(Icons.search),
+          IconButton(
+              onPressed: () {
+                showSearch(context: context, delegate: MovieSearch());
+              },
+              icon: Icon(Icons.search))
         ],
       ),
       body: SingleChildScrollView(
@@ -38,8 +42,12 @@ class MoviesUI extends ConsumerWidget {
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.upcoming);
                       },
-                      child: Text("UP COMMINNG",
-                      style: TextStyle(color: movieStateRef == MovieState.upcoming ? Colors.white :null),
+                      child: Text(
+                        "UP COMMINNG",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.upcoming
+                                ? Colors.white
+                                : null),
                       )),
                   TextButton(
                       onPressed: () {
@@ -47,16 +55,25 @@ class MoviesUI extends ConsumerWidget {
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.popular);
                       },
-                      child: Text("Popular ",
-                      style: TextStyle(color: movieStateRef == MovieState.popular ? Colors.white :null),)),
+                      child: Text(
+                        "Popular ",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.popular
+                                ? Colors.white
+                                : null),
+                      )),
                   TextButton(
                       onPressed: () {
                         ref
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.nowplaying);
                       },
-                      child: Text("Now Playing",
-                      style: TextStyle(color: movieStateRef == MovieState.nowplaying ? Colors.white :null),
+                      child: Text(
+                        "Now Playing",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.nowplaying
+                                ? Colors.white
+                                : null),
                       )),
                   TextButton(
                       onPressed: () {
@@ -64,8 +81,12 @@ class MoviesUI extends ConsumerWidget {
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.topRated);
                       },
-                      child: Text("Top Rated",
-                      style: TextStyle(color: movieStateRef == MovieState.topRated ? Colors.white :null),
+                      child: Text(
+                        "Top Rated",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.topRated
+                                ? Colors.white
+                                : null),
                       )),
                 ],
               ),
@@ -110,12 +131,16 @@ class MoviesUI extends ConsumerWidget {
     final upCommingRef = ref.watch(fp);
     List<Widget> widgets = [];
     upCommingRef.when(data: (movies) {
-      widgets =
-          movies.map((e) => InkWell(onTap: () {
-            Navigator.push(ref.context, MaterialPageRoute(builder: ((context) => 
-            MovieDetailUI(movieId: e.id))
-            ));
-          },child: MovieVarticalCard(movie: e, width: 500))).toList();
+      widgets = movies
+          .map((e) => InkWell(
+              onTap: () {
+                Navigator.push(
+                    ref.context,
+                    MaterialPageRoute(
+                        builder: ((context) => MovieDetailUI(movieId: e.id))));
+              },
+              child: MovieVarticalCard(movie: e, width: 500)))
+          .toList();
     }, error: (e, st) {
       return widgets.add(const Text("Oop"));
     }, loading: () {
@@ -123,5 +148,95 @@ class MoviesUI extends ConsumerWidget {
     });
 
     return widgets;
+  }
+}
+
+class MovieSearch extends SearchDelegate {
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+          onPressed: () {
+            query = '';
+          },
+          icon: Icon(Icons.clear)),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          close(context, null);
+        },
+        icon: Icon(Icons.arrow_back));
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(
+      child: Consumer(builder: (context, ref, child) {
+        final size = MediaQuery.of(context).size;
+        final searchRef = ref.watch(searchMovieFutureProvider(query));
+        return Container(
+          child: searchRef.when(data: (movies) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) =>
+                                  MovieDetailUI(movieId: movies[index].id))));
+                    },
+                    child: MovieVarticalCard(
+                        movie: movies[index], width: size.width));
+              },
+              itemCount: movies.length,
+            );
+          }, error: (e, _) {
+            return const Center(child: Text("Sorry!"));
+          }, loading: () {
+            return const Center(child: CircularProgressIndicator());
+          }),
+        );
+      }),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Container(
+      child: Consumer(builder: (context, ref, child) {
+        final size = MediaQuery.of(context).size;
+        final searchRef = ref.watch(searchMovieFutureProvider(query));
+        return Container(
+          child: searchRef.when(data: (movies) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) =>
+                                  MovieDetailUI(movieId: movies[index].id))));
+                    },
+                    child: MovieVarticalCard(
+                        movie: movies[index], width: size.width));
+              },
+              itemCount: movies.length,
+            );
+          }, error: (e, _) {
+            return const Center(
+              child:   Text("Empty!"),
+            );
+          }, loading: () {
+            return const Center(child: CircularProgressIndicator());
+          }),
+        );
+      }),
+    );
   }
 }

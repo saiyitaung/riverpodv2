@@ -8,6 +8,7 @@ import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/utils/myutils.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class MovieDetailUI extends ConsumerWidget {
   final int movieId;
@@ -19,7 +20,9 @@ class MovieDetailUI extends ConsumerWidget {
     final movieRef = ref.watch(movieDetailFutureProvider(movieId));
     final castRef = ref.watch(castsFutureProvider(movieId));
     final similarMovieRef = ref.watch(similarMoviesFutureProvider(movieId));
+    final movieTrailerRef = ref.watch(movieIdFutureProvider(movieId));
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
         body: movieRef.when(data: (data) {
       return SafeArea(
@@ -53,13 +56,31 @@ class MovieDetailUI extends ConsumerWidget {
                 SizedBox(
                   height: 50,
                   width: size.width,
-                  child: Row(children: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.arrow_back_rounded))
-                  ]),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.arrow_back_rounded)),
+                        IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: ((context) {
+                                    return movieTrailerRef.when(data: (data) {
+                                      return TrailerView(
+                                          videoId: data.toString());
+                                    }, error: (e, _) {
+                                      return Icon(Icons.play_arrow);
+                                    }, loading: () {
+                                      return Icon(Icons.play_arrow);
+                                    });
+                                  }));
+                            },
+                            icon: Icon(Icons.play_circle_filled)),
+                      ]),
                 ),
                 Positioned(
                   bottom: 50,
@@ -239,5 +260,48 @@ class MovieDetailUI extends ConsumerWidget {
         child: CircularProgressIndicator(),
       );
     }));
+  }
+}
+
+class TrailerView extends ConsumerStatefulWidget {
+  final String videoId;
+  TrailerView({required this.videoId, super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _TrailerViewState(videoID: videoId);
+  }
+}
+
+class _TrailerViewState extends ConsumerState {
+  final String videoID;
+  _TrailerViewState({required this.videoID});
+  late YoutubePlayerController _controller;
+
+  bool _isPlayerReady = false;
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: videoID,
+      flags: YoutubePlayerFlags(
+        autoPlay: true,
+        isLive: false,
+      ),
+    );
+  }
+
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+      ),
+    );
   }
 }

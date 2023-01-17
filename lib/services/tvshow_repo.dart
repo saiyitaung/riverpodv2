@@ -66,7 +66,23 @@ Future<List<TVShow>> nowPlaying() async {
 
     return topRated;
   }
+ Future<List<TVShow>> searchTVShows(String q) async {
+    final resp = await dio.get(searchTVShowURL, queryParameters: {
+      "api_key": apiConfig.key,
+      "language": "en-US",
+      "page": "1",
+      "include_adult":false,
+      "query":q,
+    });
+    List<TVShow> tvShows = [];
+    tvShows = List<dynamic>.from(resp.data['results'])
+        .map((e) => TVShow.fromJson(e))
+        .where((element) => element.backdropPath != null)
+        .toList();
 
+    return tvShows;
+  }
+ 
   Future<List<Cast>> getCastsByTvShowID(int tvShowID) async {
     final resp = await dio.get("${baseTvURL}/$tvShowID/credits",queryParameters: {
       "api_key": apiConfig.key,

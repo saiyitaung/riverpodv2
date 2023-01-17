@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpodv2/components/movie_vartical_card.dart';
 import 'package:riverpodv2/models/movie.dart';
 import 'package:riverpodv2/models/tvshow.dart';
-import 'package:riverpodv2/models/tvshowdetail.dart';
 import 'package:riverpodv2/providers/genres_future_provider.dart';
 import 'package:riverpodv2/providers/movies_state_notifier.dart';
 import 'package:riverpodv2/providers/tvshow_future_provider.dart';
@@ -20,7 +19,9 @@ class TVShowUI extends ConsumerWidget {
         title: Text("TV Shows"),
         elevation: 0,
         actions: [
-          Icon(Icons.search),
+          IconButton(onPressed: (){
+            showSearch(context: context, delegate: CustomTvSearch());
+          }, icon: Icon(Icons.search))
         ],
       ),
       body: SingleChildScrollView(
@@ -123,4 +124,92 @@ class TVShowUI extends ConsumerWidget {
 
     return widgets;
   }
+}
+
+
+class CustomTvSearch extends SearchDelegate{
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+     return [
+      IconButton(onPressed: (){
+        query = '';
+      }, icon: Icon(Icons.clear))
+     ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+     return IconButton(onPressed: (){
+      close(context, null);
+     }, icon: Icon(Icons.arrow_back_outlined));
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+     return Container(
+      child: Consumer(builder: (context, ref, child) {
+        final size = MediaQuery.of(context).size;
+        final searchRef = ref.watch(searchTvShowsFutureProvider(query));
+        return Container(
+          child: searchRef.when(data: (movies) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) =>
+                                  TVShowDetailUI(tvShowID: movies[index].id))));
+                    },
+                    child: MovieVarticalCard(
+                        movie: Movie.fromTvShow(movies[index]), width: size.width));
+              },
+              itemCount: movies.length,
+            );
+          }, error: (e, st) {
+           
+            return const Center(child: Text("Empty!"),);
+          }, loading: () {
+            return Center(child:const CircularProgressIndicator());
+          }),
+        );
+      }),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+     return Container(
+      child: Consumer(builder: (context, ref, child) {
+        final size = MediaQuery.of(context).size;
+        final searchRef = ref.watch(searchTvShowsFutureProvider(query));
+        return Container(
+          child: searchRef.when(data: (movies) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) =>
+                                  TVShowDetailUI(tvShowID: movies[index].id))));
+                    },
+                    child: MovieVarticalCard(
+                        movie: Movie.fromTvShow(movies[index]), width: size.width));
+              },
+              itemCount: movies.length,
+            );
+          }, error: (e, st) {
+            
+            return const Center(child:Text("Empty!"));
+          }, loading: () {
+            return const Center(child:   CircularProgressIndicator());
+          }),
+        );
+      }),
+    );
+  }
+
 }

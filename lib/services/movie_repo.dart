@@ -13,6 +13,23 @@ class MovieRepository {
   Dio dio;
   APIConfig api;
   MovieRepository({required this.dio, required this.api});
+  Future<List<Movie>> search(String q) async {
+    final resp = await dio.get("$searchMovieURL", queryParameters: {
+      "api_key": api.key ?? "",
+      "language": "en-US",
+      "include_adult": false,
+      "page": "1",
+      "query": q
+    });
+
+    List<Movie> movies = [];
+    movies = List<dynamic>.from(resp.data['results'])
+        .map((e) => Movie.fromJson(e))
+        .where((element) => element.backdropPath != null)
+        .toList();
+    return movies;
+  }
+
   Future<List<Movie>> populars() async {
     final resp = await dio.get("$baseURL/popular", queryParameters: {
       "api_key": api.key ?? "",
@@ -39,6 +56,17 @@ class MovieRepository {
     return movies;
   }
 
+  // return First trailer from results
+  Future<String> youtubeTrailerKey(int movieID) async {
+    final resp = await dio.get("$baseURL/$movieID/videos", queryParameters: {
+      "api_key": api.key ?? "",
+      "language": "en-US",
+    });
+    String k= List<dynamic>.from(resp.data['results']).map((e) => e['key']).first.toString();
+
+    return k;
+  }
+
   Future<List<Movie>> topRated() async {
     final resp = await dio.get("$baseURL/top_rated", queryParameters: {
       "api_key": api.key ?? "",
@@ -47,6 +75,7 @@ class MovieRepository {
     });
     final movies = List<dynamic>.from(resp.data['results'])
         .map((e) => Movie.fromJson(e))
+        .where((element) => element.backdropPath != null)
         .toList();
     return movies;
   }
@@ -59,6 +88,7 @@ class MovieRepository {
     });
     final movies = List<dynamic>.from(resp.data['results'])
         .map((e) => Movie.fromJson(e))
+        .where((element) => element.backdropPath != null)
         .toList();
     return movies;
   }
