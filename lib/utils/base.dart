@@ -7,4 +7,4 @@ const topRatedTVShow = "https://api.themoviedb.org/3/tv/top_rated";
 const baseActorURL = "https://api.themoviedb.org/3/person";
 const popularActorsURL = "https://api.themoviedb.org/3/person/popular";
 const movieDetailURL = "https://api.themoviedb.org/3/movie/";
-const baseTvURL = "https://api.themoviedb.org/3/tv/";
+const baseTvURL = "https://api.themoviedb.org/3/tv";

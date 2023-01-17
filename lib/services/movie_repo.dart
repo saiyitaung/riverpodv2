@@ -8,7 +8,7 @@ import 'package:riverpodv2/utils/base.dart';
 
 final moviesProvider =
     Provider((ref) => MovieRepository(dio: Dio(), api: Config.getAPIConfig()));
- 
+
 class MovieRepository {
   Dio dio;
   APIConfig api;
@@ -17,7 +17,7 @@ class MovieRepository {
     final resp = await dio.get("$baseURL/popular", queryParameters: {
       "api_key": api.key ?? "",
       "language": "en-US",
-      "page": "1"
+      "page": "2"
     });
     List<Movie> movies = [];
     for (final m in resp.data['results']) {
@@ -29,6 +29,18 @@ class MovieRepository {
 
   Future<List<Movie>> nowPlaying() async {
     final resp = await dio.get("$baseURL/now_playing", queryParameters: {
+      "api_key": api.key ?? "",
+      "language": "en-US",
+      "page": "1"
+    });
+    final movies = List<dynamic>.from(resp.data['results'])
+        .map((e) => Movie.fromJson(e))
+        .toList();
+    return movies;
+  }
+
+  Future<List<Movie>> topRated() async {
+    final resp = await dio.get("$baseURL/top_rated", queryParameters: {
       "api_key": api.key ?? "",
       "language": "en-US",
       "page": "1"
@@ -57,21 +69,27 @@ class MovieRepository {
       "language": "en-US",
       "page": "1"
     });
-    List<Movie> movies=[];
-    movies = List<dynamic>.from(resp.data['results']).map((e) => Movie.fromJson(e)).toList();
+    List<Movie> movies = [];
+    movies = List<dynamic>.from(resp.data['results'])
+        .map((e) => Movie.fromJson(e))
+        .toList();
 
     return movies;
   }
+
   Future<List<Cast>> getCastsBytMovieID(int id) async {
-     final resp = await dio.get("$baseURL/$id/credits", queryParameters: {
+    final resp = await dio.get("$baseURL/$id/credits", queryParameters: {
       "api_key": api.key ?? "",
       "language": "en-US",
       "page": "1"
     });
-    List<Cast> casts=[];
-    casts = List<dynamic>.from(resp.data['cast']).map((e) => Cast.fromJson(e)).toList();
+    List<Cast> casts = [];
+    casts = List<dynamic>.from(resp.data['cast'])
+        .map((e) => Cast.fromJson(e))
+        .toList();
     return casts;
   }
+
   Future<MovieDetail> movieDetail(int id) async {
     final resp = await dio.get("$movieDetailURL/$id", queryParameters: {
       "api_key": api.key ?? "",

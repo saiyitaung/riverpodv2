@@ -6,6 +6,20 @@ final topRatedTVShowFutureProvider = FutureProvider((ref){
   final topRatedTVRef = ref.watch(tvShowProvider);
   return topRatedTVRef.topRated();
 });
+final popularTVShowFutureProvider = FutureProvider((ref){
+  final tvRef = ref.watch(tvShowProvider);
+  return tvRef.popular();
+});
+final nowPlayingTVShowFutureProvider = FutureProvider((ref){
+  final tvRef = ref.watch(tvShowProvider);
+  return tvRef.nowPlaying();
+});
+final upComingTVShowFutureProvider = FutureProvider((ref) {
+  final tvRef = ref.watch(tvShowProvider);
+  return tvRef.upComing();
+});
+
+
 
 final tvDetailFutureProvider = FutureProvider.family((ref,int tvShowID){
   final detailRef = ref.watch(tvShowProvider);

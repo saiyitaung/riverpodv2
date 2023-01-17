@@ -14,6 +14,15 @@ final upCommingMovieFutureProvider= FutureProvider((ref){
   final movieRef = ref.watch(moviesProvider);
   return movieRef.upComming();
 });
+final topRatedMovieFutureProvider = FutureProvider((ref){
+  final movieRef = ref.watch(moviesProvider);
+  return movieRef.topRated();
+});
+final nowplayingMoiveFutureProvider = FutureProvider((ref){
+  final movieRef = ref.watch(moviesProvider);
+  return movieRef.nowPlaying();
+});
+
 
 final movieDetailFutureProvider = FutureProvider.family((ref,int movieID){
   final movieRef = MovieRepository(dio:Dio(),api: Config.getAPIConfig());

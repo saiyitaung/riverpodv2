@@ -39,7 +39,6 @@ class MovieDetailUI extends ConsumerWidget {
                 Container(
                   height: size.height * .45,
                   width: size.width,
-                  
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                     colors: [
@@ -62,14 +61,18 @@ class MovieDetailUI extends ConsumerWidget {
                         icon: Icon(Icons.arrow_back_rounded))
                   ]),
                 ),
-                 Positioned(
+                Positioned(
                   bottom: 50,
                   child: SizedBox(
                     width: size.width,
                     child: Center(
-                      child: Text(data.title,style: TextStyle(fontSize: 40
-                      ,
-                      fontFamily: GoogleFonts.getFont("Anton").fontFamily),textAlign: TextAlign.center,
+                      child: Text(
+                        data.title,
+                        style: TextStyle(
+                            fontSize: 40,
+                            fontFamily:
+                                GoogleFonts.getFont("Anton").fontFamily),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
@@ -77,34 +80,36 @@ class MovieDetailUI extends ConsumerWidget {
                 Positioned(
                   bottom: 20,
                   child: Container(
-                  width: size.width,
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      Text("release"),
-                      Text("${data.releaseDate}"),
-                    ],
-                  ),
-                ),),
-                
-              ]),
-            ),
-            RateBar(width: size.width, votes: data.voteCount, averageVote: data.voteAverage),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                  child: Container(
                     width: size.width,
                     alignment: Alignment.center,
-                    child: Wrap(
-                       
+                    child: Column(
                       children: [
-                        ...data.genres.map((e) => Chip(label: Text(e.name),
-                        ))
+                        Text("release"),
+                        Text("${data.releaseDate}"),
                       ],
                     ),
                   ),
-                  
                 ),
+              ]),
+            ),
+            RateBar(
+                width: size.width,
+                votes: data.voteCount,
+                averageVote: data.voteAverage),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: Wrap(
+                  children: [
+                    ...data.genres.map((e) => Chip(
+                          label: Text(e.name),
+                        ))
+                  ],
+                ),
+              ),
+            ),
             Container(
               width: size.width,
               child: Column(
@@ -124,7 +129,7 @@ class MovieDetailUI extends ConsumerWidget {
                       child: Text(
                         data.overview ?? "",
                         textAlign: TextAlign.justify,
-                      )),                 
+                      )),
                   SizedBox(
                     height: 10,
                   ),
@@ -151,7 +156,9 @@ class MovieDetailUI extends ConsumerWidget {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: ((context) => ActorDetailUI(actorID: data[index].id,))));
+                                        builder: ((context) => ActorDetailUI(
+                                              actorID: data[index].id,
+                                            ))));
                               },
                               child: ActorCard(
                                 actor: Actor(

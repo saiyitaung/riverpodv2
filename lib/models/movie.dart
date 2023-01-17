@@ -1,4 +1,6 @@
 
+import 'package:riverpodv2/models/tvshow.dart';
+
 class Movie {
   int id;
   String originalLanguage;
@@ -47,4 +49,20 @@ class Movie {
         video = json['video'],
         voteAverage = double.parse(json['vote_average'].toString()),
         votecount = json['vote_count'];
+  Movie.fromTvShow(TVShow tv):
+  id = tv.id,
+        originalLanguage = tv.originalLanguage,
+        originalTitle = tv.name,
+        overview = tv.overView,
+        popularity = tv.popularity,
+        adult = false,
+        backdropPath = tv.backdropPath,
+        genreIds = tv.genreIds,
+        posterPath = tv.posterPath,
+        releaseDate = tv.firstAirDate,
+        title = tv.originalName,
+        video = false,
+        voteAverage = tv.voteAverage,
+        votecount = tv.voteCount
+  ;
 }

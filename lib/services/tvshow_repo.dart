@@ -26,8 +26,49 @@ class TVShowRepo {
 
     return topRated;
   }
+  Future<List<TVShow>> popular() async {
+    final resp = await dio.get("$baseTvURL/popular", queryParameters: {
+      "api_key": apiConfig.key,
+      "language": "en-US",
+      "page": "1"
+    });
+    List<TVShow> topRated = [];
+    topRated = List<dynamic>.from(resp.data['results'])
+        .map((e) => TVShow.fromJson(e))
+        .where((element) => element.backdropPath != null)
+        .toList();
+
+    return topRated;
+  }
+ Future<List<TVShow>> upComing() async {
+    final resp = await dio.get(topRatedTVShow, queryParameters: {
+      "api_key": apiConfig.key,
+      "language": "en-US",
+      "page": "2"
+    });
+    List<TVShow> topRated = [];
+    topRated = List<dynamic>.from(resp.data['results'])
+        .map((e) => TVShow.fromJson(e))
+        .toList();
+
+    return topRated;
+  }
+Future<List<TVShow>> nowPlaying() async {
+    final resp = await dio.get(topRatedTVShow, queryParameters: {
+      "api_key": apiConfig.key,
+      "language": "en-US",
+      "page": "1"
+    });
+    List<TVShow> topRated = [];
+    topRated = List<dynamic>.from(resp.data['results'])
+        .map((e) => TVShow.fromJson(e))
+        .toList();
+
+    return topRated;
+  }
+
   Future<List<Cast>> getCastsByTvShowID(int tvShowID) async {
-    final resp = await dio.get("${baseTvURL}$tvShowID/credits",queryParameters: {
+    final resp = await dio.get("${baseTvURL}/$tvShowID/credits",queryParameters: {
       "api_key": apiConfig.key,
       "language": "en-US",
     });
@@ -37,7 +78,7 @@ class TVShowRepo {
     return casts;
   }
   Future<TVShowDetail> tvShowDetail(int movieID) async {
-    final resp = await dio.get("${baseTvURL}$movieID",queryParameters: {
+    final resp = await dio.get("${baseTvURL}/$movieID",queryParameters: {
       "api_key": apiConfig.key,
       "language": "en-US"
     });
@@ -46,7 +87,7 @@ class TVShowRepo {
     return d;
   }
   Future<List<TVShow>> similarTvShow(int id) async {
-    final resp = await dio.get("${baseTvURL}$id/similar", queryParameters: {
+    final resp = await dio.get("${baseTvURL}/$id/similar", queryParameters: {
       "api_key": apiConfig.key ?? "",
       "language": "en-US",
       "page": "1"
