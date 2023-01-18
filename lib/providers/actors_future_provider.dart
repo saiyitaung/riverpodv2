@@ -16,3 +16,9 @@ final actorDetailFutureProvider = FutureProvider.family((ref,int actorId){
    final actorRef = ref.watch(actorProvider);
   return actorRef.actorDetial(actorId);
 });
+
+final searchActorFutureProvider = FutureProvider.family((ref,String name){
+  final actorRef = ref.watch(actorProvider);
+
+  return actorRef.search(name);
+});

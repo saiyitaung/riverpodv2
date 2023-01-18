@@ -72,7 +72,7 @@ class TVShowCard extends StatelessWidget{
                       color: Colors.yellow,
                       size: 20,
                     ),
-                    Text("${tvShow.voteAverage}")
+                    Text("${tvShow.voteAverage.toStringAsFixed(1)}")
                   ],
                 ),
                 Flexible(

@@ -3,6 +3,7 @@ const bigImageURL = "https://image.tmdb.org/t/p/w500";
 const smallImageURL = "https://image.tmdb.org/t/p/w200";
 const searchMovieURL = 'https://api.themoviedb.org/3/search/movie';
 const searchTVShowURL = "https://api.themoviedb.org/3/search/tv";
+const searchPeopleURL = "https://api.themoviedb.org/3/search/person";
 const genreListURL = "https://api.themoviedb.org/3/genre/movie/list";
 const topRatedTVShow = "https://api.themoviedb.org/3/tv/top_rated";
 const baseActorURL = "https://api.themoviedb.org/3/person";

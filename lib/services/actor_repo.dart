@@ -19,6 +19,7 @@ class ActorRepo {
       "api_key": api.key,
       "language": "en-US",
       "page": 1,
+      
     });
     List<Actor> actors = [];
     actors = List<dynamic>.from(resp.data['results'])
@@ -26,7 +27,21 @@ class ActorRepo {
         .toList();
     return actors;
   }
-
+  Future<List<Actor>> search(String name) async{
+     final resp = await dio.get(searchPeopleURL, queryParameters: {
+      "api_key": api.key,
+      "language": "en-US",
+      "page": 1,
+      "include_adult":false,
+      'query':name
+    });
+    List<Actor> actors = [];
+    actors = List<dynamic>.from(resp.data['results'])
+        .map((e) => Actor.fromJson(e))
+        .where((element) => element.profilePath != null)
+        .toList();
+    return actors;
+  }
   Future<ActorDetail> actorDetial(int id) async {
     final resp = await dio.get("$baseActorURL/$id", queryParameters: {
       "api_key": api.key,
