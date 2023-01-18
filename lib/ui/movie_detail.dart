@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/movie_card.dart';
 import 'package:riverpodv2/components/rate_bar.dart';
+import 'package:riverpodv2/components/trailer_play_button.dart';
+import 'package:riverpodv2/components/trailer_view.dart';
 import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
@@ -64,22 +66,6 @@ class MovieDetailUI extends ConsumerWidget {
                               Navigator.pop(context);
                             },
                             icon: Icon(Icons.arrow_back_rounded)),
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: ((context) {
-                                    return movieTrailerRef.when(data: (data) {
-                                      return TrailerView(
-                                          videoId: data.toString());
-                                    }, error: (e, _) {
-                                      return Icon(Icons.play_arrow);
-                                    }, loading: () {
-                                      return Icon(Icons.play_arrow);
-                                    });
-                                  }));
-                            },
-                            icon: Icon(Icons.play_circle_filled)),
                       ]),
                 ),
                 Positioned(
@@ -110,6 +96,21 @@ class MovieDetailUI extends ConsumerWidget {
                       ],
                     ),
                   ),
+                ),
+                TrailerPlayBtn(height: size.height * .45, width: size.width,
+                callBack:  () {
+                          showDialog(
+                              context: context,
+                              builder: ((context) {
+                                return movieTrailerRef.when(data: (data) {
+                                  return TrailerView(videoId: data.toString());
+                                }, error: (e, _) {
+                                  return SizedBox();
+                                }, loading: () {
+                                  return SizedBox();
+                                });
+                              }));
+                        },
                 ),
               ]),
             ),
@@ -263,45 +264,5 @@ class MovieDetailUI extends ConsumerWidget {
   }
 }
 
-class TrailerView extends ConsumerStatefulWidget {
-  final String videoId;
-  TrailerView({required this.videoId, super.key});
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() {
-    return _TrailerViewState(videoID: videoId);
-  }
-}
 
-class _TrailerViewState extends ConsumerState {
-  final String videoID;
-  _TrailerViewState({required this.videoID});
-  late YoutubePlayerController _controller;
-
-  bool _isPlayerReady = false;
-  void initState() {
-    super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: videoID,
-      flags: YoutubePlayerFlags(
-        autoPlay: true,
-        isLive: false,
-      ),
-    );
-  }
-
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: YoutubePlayer(
-        controller: _controller,
-        showVideoProgressIndicator: true,
-      ),
-    );
-  }
-}

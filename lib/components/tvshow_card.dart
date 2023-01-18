@@ -11,7 +11,7 @@ class TVShowCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    debugPrint(tvShow.name);
+   // debugPrint(tvShow.name);
     return Column(
       children: [
         Container(

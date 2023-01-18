@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/rate_bar.dart';
+import 'package:riverpodv2/components/trailer_play_button.dart';
+import 'package:riverpodv2/components/trailer_view.dart';
 import 'package:riverpodv2/components/tvshow_card.dart';
 import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/providers/tvshow_future_provider.dart';
@@ -18,6 +20,7 @@ class TVShowDetailUI extends ConsumerWidget {
     final tvRef = ref.watch(tvDetailFutureProvider(tvShowID));
     final castRef = ref.watch(castsByTvShowFutureProvider(tvShowID));
     final similarTvShowsRef = ref.watch(similarTvShowsFutureProvider(tvShowID));
+    final trailerKeyRef  = ref.watch(tvTrailerKeyFutureProvider(tvShowID));
     final size = MediaQuery.of(context).size;
     return Scaffold(
         body: tvRef.when(data: (data) {
@@ -79,31 +82,53 @@ class TVShowDetailUI extends ConsumerWidget {
                 Positioned(
                   bottom: 20,
                   child: Container(
-                  width: size.width,
-                  alignment: Alignment.center,
-                  child: Column(children: [
-                    Text("first air date",),
-                    Text("${data.firstAirDate}")
-                  ]),
-                ),),
-              ]),
-            ),
-            RateBar(width: size.width, votes: data.voteCount, averageVote: data.voteAverage),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                  child: Container(
                     width: size.width,
                     alignment: Alignment.center,
-                    child: Wrap(
-                       
-                      children: [
-                        ...data.genreIds.map((e) => Chip(label: Text(e.name),
-                        ))
-                      ],
-                    ),
+                    child: Column(children: [
+                      Text(
+                        "first air date",
+                      ),
+                      Text("${data.firstAirDate}")
+                    ]),
                   ),
-                  
                 ),
+                TrailerPlayBtn(
+                  height: size.height * .45,
+                  width: size.width,
+                  callBack: () {
+                    showDialog(
+                        context: context,
+                        builder: ((context) {
+                          return trailerKeyRef.when(data: (data) {
+                            return TrailerView(videoId: data.toString());
+                          }, error: (e, _) {
+                            return SizedBox();
+                          }, loading: () {
+                            return SizedBox();
+                          });
+                        }));
+                  },
+                ),
+              ]),
+            ),
+            RateBar(
+                width: size.width,
+                votes: data.voteCount,
+                averageVote: data.voteAverage),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: Wrap(
+                  children: [
+                    ...data.genreIds.map((e) => Chip(
+                          label: Text(e.name),
+                        ))
+                  ],
+                ),
+              ),
+            ),
             Container(
               width: size.width,
               child: Column(
@@ -151,8 +176,7 @@ class TVShowDetailUI extends ConsumerWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: ((context) => ActorDetailUI(
-                                              actorID: data[index].id
-                                            ))));
+                                            actorID: data[index].id))));
                               },
                               child: ActorCard(
                                 actor: Actor(

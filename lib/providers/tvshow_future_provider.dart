@@ -22,7 +22,10 @@ final searchTvShowsFutureProvider = FutureProvider.family((ref,String query){
   final tvRef =ref.watch(tvShowProvider);
   return tvRef.searchTVShows(query);
 });
-
+final tvTrailerKeyFutureProvider = FutureProvider.family((ref, int tvShowID){
+  final tvRef = ref.watch(tvShowProvider);
+  return tvRef.youtubeTrailerKey(tvShowID);
+});
 
 final tvDetailFutureProvider = FutureProvider.family((ref,int tvShowID){
   final detailRef = ref.watch(tvShowProvider);

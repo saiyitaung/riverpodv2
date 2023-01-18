@@ -67,8 +67,8 @@ class MovieHome extends ConsumerWidget {
             //  debugPrint('${data[0].id}');
               return CarouselSliderCard(movies: data);
             }, error: (e, st) {
-              debugPrint(e.toString());
-              debugPrint("${st.toString()}");
+              //debugPrint(e.toString());
+             // debugPrint("${st.toString()}");
               return const Center(
                 child: Text("Oop!"),
               );

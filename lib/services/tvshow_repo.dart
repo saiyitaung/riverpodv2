@@ -82,6 +82,16 @@ Future<List<TVShow>> nowPlaying() async {
 
     return tvShows;
   }
+    // return First trailer from results
+  Future<String> youtubeTrailerKey(int movieID) async {
+    final resp = await dio.get("$baseTvURL/$movieID/videos", queryParameters: {
+      "api_key": apiConfig.key ?? "",
+      "language": "en-US",
+    });
+    String k= List<dynamic>.from(resp.data['results']).map((e) => e['key']).first.toString();
+
+    return k;
+  }
  
   Future<List<Cast>> getCastsByTvShowID(int tvShowID) async {
     final resp = await dio.get("${baseTvURL}/$tvShowID/credits",queryParameters: {
