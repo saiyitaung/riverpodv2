@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/rate_bar.dart';
@@ -171,13 +172,7 @@ class TVShowDetailUI extends ConsumerWidget {
                       return ListView.builder(
                         itemBuilder: (context, index) {
                           return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: ((context) => ActorDetailUI(
-                                            actorID: data[index].id))));
-                              },
+                              onTap: ()=> GoRouter.of(context).go("/actors/${data[index].id}") ,
                               child: ActorCard(
                                 actor: Actor(
                                     profilePath: data[index].profilePath ?? "",
@@ -220,13 +215,7 @@ class TVShowDetailUI extends ConsumerWidget {
                       return ListView.builder(
                         itemBuilder: (context, index) {
                           return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: ((context) => TVShowDetailUI(
-                                          tvShowID: data[index].id))));
-                            },
+                            onTap: ()=> GoRouter.of(context).go("/tvshows/${data[index].id}") ,
                             child: TVShowCard(tvShow: data[index]),
                           );
                         },

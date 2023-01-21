@@ -33,6 +33,7 @@ class MovieHome extends ConsumerWidget {
             MaterialBanner(content: Text("Offline!"), actions: [
           TextButton(
               onPressed: () {
+                
                 ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
               },
               child: Text("dismiss"))

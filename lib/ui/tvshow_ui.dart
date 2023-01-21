@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:riverpodv2/components/movie_vartical_card.dart';
 import 'package:riverpodv2/models/movie.dart';
@@ -7,9 +8,14 @@ import 'package:riverpodv2/models/tvshow.dart';
 import 'package:riverpodv2/providers/genres_future_provider.dart';
 import 'package:riverpodv2/providers/movies_state_notifier.dart';
 import 'package:riverpodv2/providers/tvshow_future_provider.dart';
-import 'package:riverpodv2/ui/tvshow_detail.dart';
+import 'package:riverpodv2/routes/routers.dart';
+import 'package:riverpodv2/ui/movie_ui.dart';
 
 class TVShowUI extends ConsumerWidget {
+  void go(BuildContext context, String r) {
+    GoRouter.of(context).go("/$tvshows/$r");
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final genresRef = ref.watch(genresFutureProvider);
@@ -132,13 +138,7 @@ class TVShowUI extends ConsumerWidget {
     upCommingRef.when(data: (movies) {
       widgets = movies
           .map((e) => InkWell(
-              onTap: () {
-                Navigator.push(
-                    ref.context,
-                    MaterialPageRoute(
-                        builder: ((context) =>
-                            TVShowDetailUI(tvShowID: e.id))));
-              },
+              onTap: () => go(ref.context, "${e.id}"),
               child: MovieVarticalCard(movie: Movie.fromTvShow(e), width: 500)))
           .toList();
     }, error: (e, st) {
@@ -180,17 +180,10 @@ class CustomTvSearch extends SearchDelegate {
         final searchRef = ref.watch(searchTvShowsFutureProvider(query));
         return Container(
           child: searchRef.when(data: (movies) {
-
             return ListView.builder(
               itemBuilder: (context, index) {
                 return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) =>
-                                  TVShowDetailUI(tvShowID: movies[index].id))));
-                    },
+                    onTap: () => go(context, "${movies[index].id}"),
                     child: MovieVarticalCard(
                         movie: Movie.fromTvShow(movies[index]),
                         width: size.width));
@@ -198,11 +191,11 @@ class CustomTvSearch extends SearchDelegate {
               itemCount: movies.length,
             );
           }, error: (e, st) {
-            return   Center(
-               child:Lottie.asset("assets/lottiefiles/404notfound.json")
-            );
+            return Center(
+                child: Lottie.asset("assets/lottiefiles/404notfound.json"));
           }, loading: () {
-            return Center(child:   Lottie.asset("assets/lottiefiles/searching.json"));
+            return Center(
+                child: Lottie.asset("assets/lottiefiles/searching.json"));
           }),
         );
       }),
@@ -217,19 +210,14 @@ class CustomTvSearch extends SearchDelegate {
         final searchRef = ref.watch(searchTvShowsFutureProvider(query));
         return Container(
           child: searchRef.when(data: (movies) {
-            if (movies.isEmpty){
-              return Center(child: Lottie.asset("assets/lottiefiles/404notfound.json"));
+            if (movies.isEmpty) {
+              return Center(
+                  child: Lottie.asset("assets/lottiefiles/404notfound.json"));
             }
             return ListView.builder(
               itemBuilder: (context, index) {
                 return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) =>
-                                  TVShowDetailUI(tvShowID: movies[index].id))));
-                    },
+                    onTap: () => go(context, "${movies[index].id}"),
                     child: MovieVarticalCard(
                         movie: Movie.fromTvShow(movies[index]),
                         width: size.width));
@@ -237,10 +225,13 @@ class CustomTvSearch extends SearchDelegate {
               itemCount: movies.length,
             );
           }, error: (e, st) {
-            return   Center(child:  Lottie.network(
-                  "https://assets7.lottiefiles.com/private_files/lf30_GjhcdO.json"),);
+            return Center(
+              child: Lottie.network(
+                  "https://assets7.lottiefiles.com/private_files/lf30_GjhcdO.json"),
+            );
           }, loading: () {
-            return   Center(child: Lottie.asset("assets/lottiefiles/searching.json"));
+            return Center(
+                child: Lottie.asset("assets/lottiefiles/searching.json"));
           }),
         );
       }),

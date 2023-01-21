@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riverpodv2/components/movie_card.dart';
 import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/models/movie.dart';
 import 'package:riverpodv2/providers/actors_future_provider.dart';
+import 'package:riverpodv2/routes/routers.dart';
 import 'package:riverpodv2/ui/movie_detail.dart';
 import 'package:riverpodv2/utils/base.dart';
 
@@ -182,13 +184,7 @@ class ActorDetailUI extends ConsumerWidget {
                   return ListView.builder(
                     itemBuilder: (context, index) {
                       return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: ((context) =>
-                                      MovieDetailUI(movieId: data[index].id))));
-                        },
+                        onTap: ()=> GoRouter.of(context).go("/$movies/${data[index].id}") ,
                         child: MovieCard(
                             movie: Movie(
                                 id: data[index].id,

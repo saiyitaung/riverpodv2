@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 
@@ -10,8 +11,13 @@ import 'package:riverpodv2/providers/genres_future_provider.dart';
 import 'package:riverpodv2/providers/logger_provider.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/providers/movies_state_notifier.dart';
+import 'package:riverpodv2/routes/routers.dart';
 import 'package:riverpodv2/services/genre_repo.dart';
 import 'package:riverpodv2/ui/movie_detail.dart';
+
+void go(BuildContext context, String r) {
+  GoRouter.of(context).go("/$movies/$r");
+}
 
 class MoviesUI extends ConsumerWidget {
   @override
@@ -20,14 +26,13 @@ class MoviesUI extends ConsumerWidget {
     final movieStateRef = ref.watch(movieStateNotifierProvider);
     final loggerRef = ref.watch(loggerProvider);
     return Scaffold(
-      
       appBar: AppBar(
         title: Text("Movies"),
         elevation: 0,
         actions: [
           IconButton(
               onPressed: () {
-                loggerRef.log(Level.debug,"Show search");
+                loggerRef.log(Level.debug, "Show search");
                 showSearch(context: context, delegate: MovieSearch());
               },
               icon: Icon(Icons.search))
@@ -140,12 +145,7 @@ class MoviesUI extends ConsumerWidget {
     upCommingRef.when(data: (movies) {
       widgets = movies
           .map((e) => InkWell(
-              onTap: () {
-                Navigator.push(
-                    ref.context,
-                    MaterialPageRoute(
-                        builder: ((context) => MovieDetailUI(movieId: e.id))));
-              },
+              onTap: () => go(ref.context, "${e.id}"),
               child: MovieVarticalCard(movie: e, width: 500)))
           .toList();
     }, error: (e, st) {
@@ -187,26 +187,21 @@ class MovieSearch extends SearchDelegate {
         final searchRef = ref.watch(searchMovieFutureProvider(query));
         return Container(
           child: searchRef.when(data: (movies) {
-           
             return ListView.builder(
               itemBuilder: (context, index) {
                 return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) =>
-                                  MovieDetailUI(movieId: movies[index].id))));
-                    },
+                    onTap: ()=> go(context, "${movies[index].id}"),
                     child: MovieVarticalCard(
                         movie: movies[index], width: size.width));
               },
               itemCount: movies.length,
             );
           }, error: (e, _) {
-            return   Center(child: Lottie.asset("assets/lottiefiles/404notfound.json"));
+            return Center(
+                child: Lottie.asset("assets/lottiefiles/404notfound.json"));
           }, loading: () {
-            return   Center(child:Lottie.asset("assets/lottiefiles/searching.json"));
+            return Center(
+                child: Lottie.asset("assets/lottiefiles/searching.json"));
           }),
         );
       }),
@@ -219,33 +214,30 @@ class MovieSearch extends SearchDelegate {
       child: Consumer(builder: (context, ref, child) {
         final size = MediaQuery.of(context).size;
         final searchRef = ref.watch(searchMovieFutureProvider(query));
-        
+
         return Container(
           child: searchRef.when(data: (movies) {
-             if (movies.isEmpty){
-              return Center(child: Lottie.asset("assets/lottiefiles/404notfound.json"));
+            if (movies.isEmpty) {
+              return Center(
+                  child: Lottie.asset("assets/lottiefiles/404notfound.json"));
             }
             return ListView.builder(
               itemBuilder: (context, index) {
                 return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) =>
-                                  MovieDetailUI(movieId: movies[index].id))));
-                    },
+                    onTap:   ()=> go(context, "${movies[index].id}"),
                     child: MovieVarticalCard(
                         movie: movies[index], width: size.width));
               },
               itemCount: movies.length,
             );
           }, error: (e, _) {
-            return   Center(
-              child:  Lottie.network("https://assets7.lottiefiles.com/private_files/lf30_GjhcdO.json"),
+            return Center(
+              child: Lottie.network(
+                  "https://assets7.lottiefiles.com/private_files/lf30_GjhcdO.json"),
             );
           }, loading: () {
-            return   Center(child: Lottie.asset("assets/lottiefiles/searching.json"));
+            return Center(
+                child: Lottie.asset("assets/lottiefiles/searching.json"));
           }),
         );
       }),

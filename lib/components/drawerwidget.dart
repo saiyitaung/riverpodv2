@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
- 
-import 'package:riverpodv2/ui/about_ui.dart';
-import 'package:riverpodv2/ui/actors_ui.dart';
-import 'package:riverpodv2/ui/favorite_ui.dart';
-import 'package:riverpodv2/ui/movie_ui.dart';
-import 'package:riverpodv2/ui/tvshow_ui.dart';
-import 'package:riverpodv2/ui/watch_list_ui.dart';
+import 'package:go_router/go_router.dart';
+import 'package:riverpodv2/routes/routers.dart';
 
 class DrawerWidgets extends StatelessWidget {
-  void goTo(BuildContext context, Widget place) {
-    Navigator.push(context, MaterialPageRoute(builder: ((context) => place)));
+  void go(BuildContext context, String r) {
+    GoRouter.of(context).go("/$r");
   }
 
   @override
@@ -17,53 +12,44 @@ class DrawerWidgets extends StatelessWidget {
     return Drawer(
       child: Container(
           child: SingleChildScrollView(
-            child: Column(
-                  children: [
+        child: Column(
+          children: [
             Container(
               height: 300,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
-                    fit: BoxFit.cover, image: AssetImage("assets/img/tmdb.jpg")),
+                    fit: BoxFit.cover,
+                    image: AssetImage("assets/img/tmdb.jpg")),
               ),
             ),
-            CustomListTile(text: "Movies",leading: Icon(Icons.local_movies),
-            callBack: (){
-               goTo(context, MoviesUI());
-            }),
-            CustomListTile(text: "TV show",leading: Icon(Icons.movie_outlined),
-            callBack: (){
-               goTo(context, TVShowUI());
-            },),
             CustomListTile(
-              leading: Icon(Icons.person_outlined),
-              text: "Actors",
-              callBack: () {
-                goTo(context, ActorsUI());
-              },
+                text: "Movies",
+                leading: const Icon(Icons.local_movies),
+                callBack: () => go(context, movies)),
+            CustomListTile(
+              text: "TV show",
+              leading: Icon(Icons.movie_outlined),
+              callBack: () => go(context, tvshows),
             ),
-               
             CustomListTile(
-              leading: Icon(Icons.favorite),
-              callBack: (){
-                 goTo(context, MyFavoriteUI());
-              },
-              text: "Favorites"),
+                leading: Icon(Icons.person_outlined),
+                text: "Actors",
+                callBack: () => go(context, actors)),
             CustomListTile(
-              callBack: (){
-                goTo(context, WatchListUI());
-              },
-              leading: Icon(Icons.movie_outlined)
-              ,text: "Watch List"),
+                leading: Icon(Icons.favorite),
+                callBack: () => go(context, favorite),
+                text: "Favorites"),
             CustomListTile(
-              leading: Icon(Icons.info),
-              text: "Abouts",
-              callBack: () {
-                goTo(context, AboutUI());
-              },
-            ),         
-                  ],
-                ),
-          )),
+                callBack: () => go(context, watch),
+                leading: Icon(Icons.movie_outlined),
+                text: "Watch List"),
+            CustomListTile(
+                leading: Icon(Icons.info),
+                text: "Abouts",
+                callBack: () => go(context, about)),
+          ],
+        ),
+      )),
     );
   }
 }
