@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
+import 'package:lottie/lottie.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/carouselslider_card.dart';
 import 'package:riverpodv2/components/drawerwidget.dart';
 import 'package:riverpodv2/components/movie_card.dart';
 import 'package:riverpodv2/components/tvshow_card.dart';
 import 'package:riverpodv2/providers/actors_future_provider.dart';
+import 'package:riverpodv2/providers/logger_provider.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
+import 'package:riverpodv2/providers/network_stat_notifier_provider.dart';
+import 'package:riverpodv2/providers/network_state_notifier.dart';
 import 'package:riverpodv2/providers/tvshow_future_provider.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/ui/movie_detail.dart';
@@ -20,12 +25,53 @@ class MovieHome extends ConsumerWidget {
     Navigator.push(context, MaterialPageRoute(builder: ((context) => place)));
   }
 
+  void displayBanner(
+      BuildContext context, NetworkStatus? previous, NetworkStatus next) {
+    switch (next) {
+      case NetworkStatus.off:
+        ScaffoldMessenger.of(context).showMaterialBanner(
+            MaterialBanner(content: Text("Offline!"), actions: [
+          TextButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              },
+              child: Text("dismiss"))
+        ]));
+        break;
+      case NetworkStatus.on:
+        if (previous == NetworkStatus.off) {
+          ScaffoldMessenger.of(context).showMaterialBanner(
+              MaterialBanner(content: Text("online"), actions: [
+            TextButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                },
+                child: Text("dismiss"))
+          ]));
+        }
+        break;
+      case NetworkStatus.unknown:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final moviesRef = ref.watch(upCommingMovieFutureProvider);
     final popularRef = ref.watch(popularsMovieFutureProvider);
     final topRatedTVShows = ref.watch(topRatedTVShowFutureProvider);
     final popularActorsRef = ref.watch(popularActorsFutureProvider);
+    final loggerRef = ref.watch(loggerProvider);
+    ref.listen(netwokStateNotifierProvider, (previous, next) {
+      displayBanner(context, previous, next);
+      if (next == NetworkStatus.on) {
+        ref.invalidate(upCommingMovieFutureProvider);
+        ref.invalidate(popularsMovieFutureProvider);
+        ref.invalidate(topRatedTVShowFutureProvider);
+        ref.invalidate(popularActorsFutureProvider);
+      }
+    });
+
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -54,9 +100,11 @@ class MovieHome extends ConsumerWidget {
                   "Upcoming movies".toUpperCase(),
                   style: const TextStyle(fontSize: 20),
                 ),
-                TextButton(onPressed: () {
-                  goTo(context, MoviesUI());
-                }, child: const Text("more"))
+                TextButton(
+                    onPressed: () {
+                      goTo(context, MoviesUI());
+                    },
+                    child: const Text("more"))
               ],
             ),
           ),
@@ -64,17 +112,14 @@ class MovieHome extends ConsumerWidget {
             height: size.height * .27,
             width: size.width,
             child: moviesRef.when(data: (data) {
-            //  debugPrint('${data[0].id}');
               return CarouselSliderCard(movies: data);
             }, error: (e, st) {
-              //debugPrint(e.toString());
-             // debugPrint("${st.toString()}");
               return const Center(
                 child: Text("Oop!"),
               );
             }, loading: () {
-              return const Center(
-                child: CircularProgressIndicator(),
+              return Center(
+                child: Lottie.asset("assets/lottiefiles/searching.json"),
               );
             }),
           ),
@@ -150,6 +195,12 @@ class MovieHome extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
               );
             }, error: (e, _) {
+              loggerRef.log(Level.error, "${e.toString()}");
+              if(ref.read(netwokStateNotifierProvider) == NetworkStatus.off){
+                return Center(
+                  child: Lottie.asset("assets/lottiefiles/nointernet.json"),
+                );
+              }
               return const Center(
                 child: Text("Oop!"),
               );
@@ -194,6 +245,7 @@ class MovieHome extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
               );
             }, error: (e, _) {
+              loggerRef.log(Level.error, "${e.toString()}");
               return const Center(
                 child: Text("Oop!"),
               );
@@ -206,7 +258,6 @@ class MovieHome extends ConsumerWidget {
         ]),
       ),
       drawer: DrawerWidgets(),
-      
     );
   }
 }

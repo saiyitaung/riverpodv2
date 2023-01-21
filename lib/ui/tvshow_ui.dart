@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:riverpodv2/components/movie_vartical_card.dart';
 import 'package:riverpodv2/models/movie.dart';
 import 'package:riverpodv2/models/tvshow.dart';
@@ -19,9 +20,11 @@ class TVShowUI extends ConsumerWidget {
         title: Text("TV Shows"),
         elevation: 0,
         actions: [
-          IconButton(onPressed: (){
-            showSearch(context: context, delegate: CustomTvSearch());
-          }, icon: Icon(Icons.search))
+          IconButton(
+              onPressed: () {
+                showSearch(context: context, delegate: CustomTvSearch());
+              },
+              icon: Icon(Icons.search))
         ],
       ),
       body: SingleChildScrollView(
@@ -38,8 +41,12 @@ class TVShowUI extends ConsumerWidget {
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.upcoming);
                       },
-                      child: Text("UP COMMINNG",
-                      style: TextStyle(color: movieStateRef == MovieState.upcoming ? Colors.white :null),
+                      child: Text(
+                        "UP COMMINNG",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.upcoming
+                                ? Colors.white
+                                : null),
                       )),
                   TextButton(
                       onPressed: () {
@@ -47,16 +54,25 @@ class TVShowUI extends ConsumerWidget {
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.popular);
                       },
-                      child: Text("Popular ",
-                      style: TextStyle(color: movieStateRef == MovieState.popular ? Colors.white :null),)),
+                      child: Text(
+                        "Popular ",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.popular
+                                ? Colors.white
+                                : null),
+                      )),
                   TextButton(
                       onPressed: () {
                         ref
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.nowplaying);
                       },
-                      child: Text("Now Playing",
-                      style: TextStyle(color: movieStateRef == MovieState.nowplaying ? Colors.white :null),
+                      child: Text(
+                        "Now Playing",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.nowplaying
+                                ? Colors.white
+                                : null),
                       )),
                   TextButton(
                       onPressed: () {
@@ -64,8 +80,12 @@ class TVShowUI extends ConsumerWidget {
                             .read(movieStateNotifierProvider.notifier)
                             .change(MovieState.topRated);
                       },
-                      child: Text("Top Rated",
-                      style: TextStyle(color: movieStateRef == MovieState.topRated ? Colors.white :null),
+                      child: Text(
+                        "Top Rated",
+                        style: TextStyle(
+                            color: movieStateRef == MovieState.topRated
+                                ? Colors.white
+                                : null),
                       )),
                 ],
               ),
@@ -110,12 +130,17 @@ class TVShowUI extends ConsumerWidget {
     final upCommingRef = ref.watch(fp);
     List<Widget> widgets = [];
     upCommingRef.when(data: (movies) {
-      widgets =
-          movies.map((e) => InkWell(onTap: () {
-            Navigator.push(ref.context, MaterialPageRoute(builder: ((context) => 
-            TVShowDetailUI(tvShowID: e.id))
-            ));
-          },child: MovieVarticalCard(movie: Movie.fromTvShow(e), width: 500))).toList();
+      widgets = movies
+          .map((e) => InkWell(
+              onTap: () {
+                Navigator.push(
+                    ref.context,
+                    MaterialPageRoute(
+                        builder: ((context) =>
+                            TVShowDetailUI(tvShowID: e.id))));
+              },
+              child: MovieVarticalCard(movie: Movie.fromTvShow(e), width: 500)))
+          .toList();
     }, error: (e, st) {
       return widgets.add(const Text("Oop"));
     }, loading: () {
@@ -126,32 +151,36 @@ class TVShowUI extends ConsumerWidget {
   }
 }
 
-
-class CustomTvSearch extends SearchDelegate{
+class CustomTvSearch extends SearchDelegate {
   @override
   List<Widget>? buildActions(BuildContext context) {
-     return [
-      IconButton(onPressed: (){
-        query = '';
-      }, icon: Icon(Icons.clear))
-     ];
+    return [
+      IconButton(
+          onPressed: () {
+            query = '';
+          },
+          icon: Icon(Icons.clear))
+    ];
   }
 
   @override
   Widget? buildLeading(BuildContext context) {
-     return IconButton(onPressed: (){
-      close(context, null);
-     }, icon: Icon(Icons.arrow_back_outlined));
+    return IconButton(
+        onPressed: () {
+          close(context, null);
+        },
+        icon: Icon(Icons.arrow_back_outlined));
   }
 
   @override
   Widget buildResults(BuildContext context) {
-     return Container(
+    return Container(
       child: Consumer(builder: (context, ref, child) {
         final size = MediaQuery.of(context).size;
         final searchRef = ref.watch(searchTvShowsFutureProvider(query));
         return Container(
           child: searchRef.when(data: (movies) {
+
             return ListView.builder(
               itemBuilder: (context, index) {
                 return InkWell(
@@ -163,15 +192,17 @@ class CustomTvSearch extends SearchDelegate{
                                   TVShowDetailUI(tvShowID: movies[index].id))));
                     },
                     child: MovieVarticalCard(
-                        movie: Movie.fromTvShow(movies[index]), width: size.width));
+                        movie: Movie.fromTvShow(movies[index]),
+                        width: size.width));
               },
               itemCount: movies.length,
             );
           }, error: (e, st) {
-           
-            return const Center(child: Text("Empty!"),);
+            return   Center(
+               child:Lottie.asset("assets/lottiefiles/404notfound.json")
+            );
           }, loading: () {
-            return Center(child:const CircularProgressIndicator());
+            return Center(child:   Lottie.asset("assets/lottiefiles/searching.json"));
           }),
         );
       }),
@@ -180,12 +211,15 @@ class CustomTvSearch extends SearchDelegate{
 
   @override
   Widget buildSuggestions(BuildContext context) {
-     return Container(
+    return Container(
       child: Consumer(builder: (context, ref, child) {
         final size = MediaQuery.of(context).size;
         final searchRef = ref.watch(searchTvShowsFutureProvider(query));
         return Container(
           child: searchRef.when(data: (movies) {
+            if (movies.isEmpty){
+              return Center(child: Lottie.asset("assets/lottiefiles/404notfound.json"));
+            }
             return ListView.builder(
               itemBuilder: (context, index) {
                 return InkWell(
@@ -197,19 +231,19 @@ class CustomTvSearch extends SearchDelegate{
                                   TVShowDetailUI(tvShowID: movies[index].id))));
                     },
                     child: MovieVarticalCard(
-                        movie: Movie.fromTvShow(movies[index]), width: size.width));
+                        movie: Movie.fromTvShow(movies[index]),
+                        width: size.width));
               },
               itemCount: movies.length,
             );
           }, error: (e, st) {
-            
-            return const Center(child:Text("Empty!"));
+            return   Center(child:  Lottie.network(
+                  "https://assets7.lottiefiles.com/private_files/lf30_GjhcdO.json"),);
           }, loading: () {
-            return const Center(child:   CircularProgressIndicator());
+            return   Center(child: Lottie.asset("assets/lottiefiles/searching.json"));
           }),
         );
       }),
     );
   }
-
 }

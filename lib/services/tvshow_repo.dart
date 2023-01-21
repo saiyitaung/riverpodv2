@@ -88,7 +88,9 @@ Future<List<TVShow>> nowPlaying() async {
       "api_key": apiConfig.key ?? "",
       "language": "en-US",
     });
-    String k= List<dynamic>.from(resp.data['results']).map((e) => e['key']).first.toString();
+    String k= List<dynamic>.from(resp.data['results']).where((element) => element['official'] ==true)
+          .map((e) => e['key'])   
+    .first.toString();
 
     return k;
   }

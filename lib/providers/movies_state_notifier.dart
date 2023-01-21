@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final movieStateNotifierProvider =
-    StateNotifierProvider<MoviesStateNotifier,MovieState>((ref) => MoviesStateNotifier(MovieState.upcoming));
+    StateNotifierProvider<MoviesStateNotifier, MovieState>(
+        (ref) => MoviesStateNotifier(MovieState.upcoming));
 
 class MoviesStateNotifier extends StateNotifier<MovieState> {
   MoviesStateNotifier(super.state);

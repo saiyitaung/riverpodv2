@@ -62,8 +62,12 @@ class MovieRepository {
       "api_key": api.key ?? "",
       "language": "en-US",
     });
-    String k= List<dynamic>.from(resp.data['results']).map((e) => e['key']).first.toString();
-
+    String k = List<dynamic>.from(resp.data['results'])
+        .where((element) => element['official'] == true)
+        .map((e) => e['key'])
+        .first
+        .toString();
+    
     return k;
   }
 
