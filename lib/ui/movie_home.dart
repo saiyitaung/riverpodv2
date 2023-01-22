@@ -32,12 +32,14 @@ class MovieHome extends ConsumerWidget {
         ScaffoldMessenger.of(context).showMaterialBanner(
             MaterialBanner(content: Text("Offline!"), actions: [
           TextButton(
-              onPressed: () {
-                
+              onPressed: () {                
                 ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
               },
               child: Text("dismiss"))
         ]));
+        Future.delayed(Duration(seconds: 5),() {
+          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        },);
         break;
       case NetworkStatus.on:
         if (previous == NetworkStatus.off) {
@@ -50,6 +52,9 @@ class MovieHome extends ConsumerWidget {
                 child: Text("dismiss"))
           ]));
         }
+         Future.delayed(Duration(seconds: 5),() {
+          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        },);
         break;
       case NetworkStatus.unknown:
         break;

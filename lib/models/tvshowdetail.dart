@@ -1,19 +1,37 @@
+import 'package:hive/hive.dart';
 import 'package:riverpodv2/models/genre.dart';
 
+part 'tvshowdetail.g.dart';
+
+@HiveType(typeId: 102)
 class TVShowDetail {
+  @HiveField(0)
   String? posterPath;
+  @HiveField(1)
   double popularity;
+  @HiveField(2)
   int id;
+  @HiveField(3)
   String? backdropPath;
+  @HiveField(4)
   double voteAverage;
+  @HiveField(5)
   String overView;
+  @HiveField(6)
   String firstAirDate;
+  @HiveField(7)
   String lastAirDate;
+  @HiveField(8)
   List<String> originCountry;
+  @HiveField(9)
   List<Genre> genreIds;
+  @HiveField(10)
   String originalLanguage;
+  @HiveField(11)
   int voteCount;
+  @HiveField(12)
   String name;
+  @HiveField(13)
   String originalName;
   TVShowDetail(
       {this.posterPath,

@@ -1,5 +1,10 @@
+import 'package:hive/hive.dart';
+part 'production_country.g.dart';
+@HiveType(typeId: 113)
 class ProductionCountry{
+  @HiveField(0)
   String iso;
+  @HiveField(1)
   String name;
   ProductionCountry({
     required this.iso,

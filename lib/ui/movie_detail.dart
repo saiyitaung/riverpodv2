@@ -8,25 +8,28 @@ import 'package:riverpodv2/components/rate_bar.dart';
 import 'package:riverpodv2/components/trailer_play_button.dart';
 import 'package:riverpodv2/components/trailer_view.dart';
 import 'package:riverpodv2/models/actor.dart';
+import 'package:riverpodv2/providers/favorite_movie_state_notifier.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
+import 'package:riverpodv2/providers/movie_watch_list_state_notifier.dart';
 import 'package:riverpodv2/routes/routers.dart';
-import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/utils/myutils.dart';
- 
 
 class MovieDetailUI extends ConsumerWidget {
   final int movieId;
 
   const MovieDetailUI({required this.movieId, super.key});
-void go(BuildContext context, String r) {
-  GoRouter.of(context).go("/$movies/$r");
-}
+  void go(BuildContext context, String r) {
+    GoRouter.of(context).go("/$movies/$r");
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final movieRef = ref.watch(movieDetailFutureProvider(movieId));
     final castRef = ref.watch(castsFutureProvider(movieId));
     final similarMovieRef = ref.watch(similarMoviesFutureProvider(movieId));
     final movieTrailerRef = ref.watch(movieIdFutureProvider(movieId));
+    final favoriteMovieStateNotitierRef =
+        ref.watch(favoriteMoviesStateNotifierProvider);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -66,10 +69,23 @@ void go(BuildContext context, String r) {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
+                            onPressed: () => GoRouter.of(context).pop(),
                             icon: Icon(Icons.arrow_back_rounded)),
+                        IconButton(
+                            onPressed: () {
+                              ref
+                                  .read(favoriteMoviesStateNotifierProvider
+                                      .notifier)
+                                  .addToFavorite(data);
+                            },
+                            icon: Icon(
+                              Icons.favorite,
+                              color: favoriteMovieStateNotitierRef
+                                      
+                                      .contains(data)
+                                  ? Colors.red
+                                  : Colors.white,
+                            )),
                       ]),
                 ),
                 Positioned(
@@ -101,26 +117,31 @@ void go(BuildContext context, String r) {
                     ),
                   ),
                 ),
-                TrailerPlayBtn(height: size.height * .45, width: size.width,
-                callBack:  () {
-                          showDialog(
-                              context: context,
-                              builder: ((context) {
-                                return movieTrailerRef.when(data: (data) {
-                                  return TrailerView(videoId: data.toString());
-                                }, error: (e, _) {
-                                  return SizedBox();
-                                }, loading: () {
-                                  return SizedBox();
-                                });
-                              }));
-                        },
+                TrailerPlayBtn(
+                  height: size.height * .45,
+                  width: size.width,
+                  callBack: () {
+                    showDialog(
+                        context: context,
+                        builder: ((context) {
+                          return movieTrailerRef.when(data: (data) {
+                            return TrailerView(videoId: data.toString());
+                          }, error: (e, _) {
+                            return SizedBox();
+                          }, loading: () {
+                            return SizedBox();
+                          });
+                        }));
+                  },
                 ),
               ]),
             ),
             RateBar(
                 width: size.width,
                 votes: data.voteCount,
+                addToWatchList: (){
+                  ref.watch(movieWatchListStateNotifierProvider.notifier).add(data);
+                },
                 averageVote: data.voteAverage),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -178,7 +199,8 @@ void go(BuildContext context, String r) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
                           return InkWell(
-                              onTap: () => GoRouter.of(context).go("/actors/${data[index].id}"),
+                              onTap: () => GoRouter.of(context)
+                                  .go("/actors/${data[index].id}"),
                               child: ActorCard(
                                 actor: Actor(
                                     profilePath: data[index].profilePath ?? "",
@@ -220,7 +242,7 @@ void go(BuildContext context, String r) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
                           return InkWell(
-                            onTap: ()=> go(context, "${data[index].id}")  ,
+                            onTap: () => go(context, "${data[index].id}"),
                             child: MovieCard(movie: data[index]),
                           );
                         },
@@ -254,6 +276,3 @@ void go(BuildContext context, String r) {
     }));
   }
 }
-
-
-

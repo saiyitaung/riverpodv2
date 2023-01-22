@@ -5,12 +5,13 @@ class RateBar extends StatelessWidget {
   final double width;
   final int votes;
   final double averageVote;
-
+  final VoidCallback? addToWatchList;
   const RateBar(
       {this.height = 80,
       required this.width,
       required this.votes,
       required this.averageVote,
+      this.addToWatchList,
       super.key});
 
   @override
@@ -61,10 +62,13 @@ class RateBar extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.favorite,
-                    color: Colors.yellow,
+                children: [
+                  IconButton(
+                    onPressed: addToWatchList,
+                    icon: Icon(
+                      Icons.post_add_rounded,
+                      color: Colors.yellow,
+                    ),
                   ),
                   SizedBox(
                     height: 3,

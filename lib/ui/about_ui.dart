@@ -9,9 +9,9 @@ class AboutUI extends StatelessWidget {
         body: Container(
       height: size.height,
       width: size.width,
-      decoration: const BoxDecoration(
+      decoration:   BoxDecoration(
           gradient: LinearGradient(
-        colors: [Color.fromARGB(31, 63, 57, 57),Color.fromARGB(255, 64, 14, 78), Color.fromARGB(255, 25, 7, 48)],
+        colors: [Colors.grey.shade700,  Colors.grey.shade900],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight
       )),
@@ -39,7 +39,7 @@ class AboutUI extends StatelessWidget {
         ),),
         SizedBox(height: 10,),
         Text("Version 1.0",style: TextStyle(           
-          fontSize: 24
+          fontSize: 18
         ),),
         
         Spacer(),

@@ -1,28 +1,53 @@
+import 'package:hive/hive.dart';
 import 'package:riverpodv2/models/genre.dart';
 import 'package:riverpodv2/models/production_company.dart';
 import 'package:riverpodv2/models/production_country.dart';
 
+part 'moviedetail.g.dart';
+
+@HiveType(typeId: 101)
 class MovieDetail {
+  @HiveField(0)
   bool adult;
+  @HiveField(1)
   String? backdropPath;
+  @HiveField(2)
   int budget;
+  @HiveField(3)
   List<Genre> genres;
+  @HiveField(4)
   String? homePage;
+  @HiveField(5)
   int id;
+  @HiveField(6)
   String? imdbID;
+  @HiveField(7)
   String originalLanguage;
+  @HiveField(8)
   String originalTitle;
+  @HiveField(9)
   String? overview;
+  @HiveField(10)
   double popularity;
+  @HiveField(11)
   String? posterPath;
+  @HiveField(12)
   List<ProductionCompany> productionCompanies;
+  @HiveField(13)
   List<ProductionCountry> productionCountries;
+  @HiveField(14)
   String releaseDate;
+  @HiveField(15)
   int revenue;
+  @HiveField(16)
   double? runtime;
+  @HiveField(17)
   String title;
+  @HiveField(18)
   bool video;
+  @HiveField(19)
   double voteAverage;
+  @HiveField(20)
   int voteCount;
   MovieDetail(
       {required this.adult,
