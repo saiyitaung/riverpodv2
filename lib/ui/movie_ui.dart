@@ -1,10 +1,9 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
-
 import 'package:riverpodv2/components/movie_vartical_card.dart';
 import 'package:riverpodv2/models/movie.dart';
 import 'package:riverpodv2/providers/genres_future_provider.dart';
@@ -12,7 +11,6 @@ import 'package:riverpodv2/providers/logger_provider.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/providers/movies_state_notifier.dart';
 import 'package:riverpodv2/routes/routers.dart';
-import 'package:riverpodv2/services/genre_repo.dart';
 import 'package:riverpodv2/ui/movie_detail.dart';
 
 void go(BuildContext context, String r) {
@@ -144,9 +142,16 @@ class MoviesUI extends ConsumerWidget {
     List<Widget> widgets = [];
     upCommingRef.when(data: (movies) {
       widgets = movies
-          .map((e) => InkWell(
-              onTap: () => go(ref.context, "${e.id}"),
-              child: MovieVarticalCard(movie: e, width: 500)))
+          .map((e) => OpenContainer(
+                closedColor: Colors.transparent,
+                closedElevation: 0,
+                closedBuilder: (context, action) {
+                  return MovieVarticalCard(movie: e, width: 500);
+                },
+                openBuilder: (context, action) {
+                  return MovieDetailUI(movieId: e.id);
+                },
+              ))
           .toList();
     }, error: (e, st) {
       return widgets.add(const Text("Oop"));
@@ -189,10 +194,14 @@ class MovieSearch extends SearchDelegate {
           child: searchRef.when(data: (movies) {
             return ListView.builder(
               itemBuilder: (context, index) {
-                return InkWell(
-                    onTap: ()=> go(context, "${movies[index].id}"),
-                    child: MovieVarticalCard(
-                        movie: movies[index], width: size.width));
+                return OpenContainer(
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  closedBuilder: (context, action) => MovieVarticalCard(
+                      movie: movies[index], width: size.width),
+                  openBuilder: (context, action) =>
+                      MovieDetailUI(movieId: movies[index].id),
+                );
               },
               itemCount: movies.length,
             );
@@ -216,6 +225,8 @@ class MovieSearch extends SearchDelegate {
         final searchRef = ref.watch(searchMovieFutureProvider(query));
 
         return Container(
+          height: size.height,
+          width: size.width,
           child: searchRef.when(data: (movies) {
             if (movies.isEmpty) {
               return Center(
@@ -223,10 +234,18 @@ class MovieSearch extends SearchDelegate {
             }
             return ListView.builder(
               itemBuilder: (context, index) {
-                return InkWell(
-                    onTap:   ()=> go(context, "${movies[index].id}"),
-                    child: MovieVarticalCard(
-                        movie: movies[index], width: size.width));
+                return OpenContainer(
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  closedBuilder: (context, action) => MovieVarticalCard(
+                      movie: movies[index], width: size.width),
+                  openBuilder: (context, action) =>
+                      MovieDetailUI(movieId: movies[index].id),
+                );
+                // return InkWell(
+                //     onTap: () => go(context, "${movies[index].id}"),
+                //     child: MovieVarticalCard(
+                //         movie: movies[index], width: size.width));
               },
               itemCount: movies.length,
             );

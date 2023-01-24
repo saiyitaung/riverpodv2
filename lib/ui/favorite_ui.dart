@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,7 @@ import 'package:riverpodv2/components/movie_vartical_card.dart';
 import 'package:riverpodv2/models/movie.dart';
 import 'package:riverpodv2/models/moviedetail.dart';
 import 'package:riverpodv2/providers/favorite_movie_state_notifier.dart';
+import 'package:riverpodv2/ui/movie_detail.dart';
 
 class MyFavoriteUI extends ConsumerWidget {
   @override
@@ -19,10 +21,14 @@ class MyFavoriteUI extends ConsumerWidget {
         valueListenable: Hive.box<MovieDetail>("favoritemovies").listenable(),
         builder: (context, value, child) {
           final movies = value.values.toList();
+          if(movies.isEmpty){
+            return Center(child: Lottie.asset("assets/lottiefiles/404notfound.json"),);
+          }
+
           return ListView.builder(
             itemBuilder: ((context, index) {
               return InkWell(
-                onTap: ()=> GoRouter.of(context).go("/movies/${movies[index].id}"),
+               
                 onLongPress: (){
                   showDialog(context: context, builder:  (context) {
                     return AlertDialog(
@@ -40,7 +46,11 @@ class MyFavoriteUI extends ConsumerWidget {
          
                   },);
                 },
-                child: MovieVarticalCard(
+                child: OpenContainer(
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  openBuilder: (context, action) => MovieDetailUI(movieId: movies[index].id),
+                  closedBuilder: (context, action) =>  MovieVarticalCard(
                     movie: Movie(
                         id: movies[index].id,
                         originalLanguage: movies[index].originalLanguage,
@@ -55,6 +65,7 @@ class MyFavoriteUI extends ConsumerWidget {
                         voteAverage: movies[index].voteAverage,
                         votecount: movies[index].voteCount),
                     width: MediaQuery.of(context).size.width),
+                ),
               );
             }),
             itemCount: movies.length,

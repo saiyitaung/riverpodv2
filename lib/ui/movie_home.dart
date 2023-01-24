@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -148,12 +149,14 @@ class MovieHome extends ConsumerWidget {
             child: popularRef.when(data: (data) {
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      goTo(context, MovieDetailUI(movieId: data[index].id));
-                    },
-                    child: MovieCard(movie: data[index]),
-                  );
+                  return OpenContainer(
+                    closedElevation: 0,
+                    closedColor: Colors.transparent,
+                    closedBuilder: (context, action) {
+                    return MovieCard(movie: data[index]);                   
+                  }, openBuilder:  (context, action) {
+                     return MovieDetailUI(movieId: data[index].id);
+                  },);
                 },
                 itemCount: data.length,
                 scrollDirection: Axis.horizontal,
@@ -187,15 +190,24 @@ class MovieHome extends ConsumerWidget {
             child: topRatedTVShows.when(data: (data) {
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  return InkWell(
-                      onTap: () {
-                        goTo(
-                            context,
-                            TVShowDetailUI(
-                              tvShowID: data[index].id,
-                            ));
-                      },
-                      child: TVShowCard(tvShow: data[index]));
+                  return OpenContainer(
+                    closedColor: Colors.transparent,
+                    closedElevation: 0,
+                    closedBuilder: (context, action) {
+                    return TVShowCard(tvShow: data[index]);
+                  }, openBuilder: (context, action) {
+                    return TVShowDetailUI(tvShowID: data[index].id);
+                  },);
+
+                  // return InkWell(
+                  //     onTap: () {
+                  //       goTo(
+                  //           context,
+                  //           TVShowDetailUI(
+                  //             tvShowID: data[index].id,
+                  //           ));
+                  //     },
+                  //     child: TVShowCard(tvShow: data[index]));
                 },
                 itemCount: data.length,
                 scrollDirection: Axis.horizontal,

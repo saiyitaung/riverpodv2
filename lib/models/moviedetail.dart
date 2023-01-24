@@ -99,4 +99,7 @@ class MovieDetail {
         video = json['video'],
         voteAverage = json['vote_average'],
         voteCount = json['vote_count'];
+        String toString(){
+          return "$id , $title";
+        }
 }

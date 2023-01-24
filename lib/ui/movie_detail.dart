@@ -1,7 +1,10 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logger/logger.dart';
+import 'package:lottie/lottie.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/movie_card.dart';
 import 'package:riverpodv2/components/rate_bar.dart';
@@ -9,9 +12,11 @@ import 'package:riverpodv2/components/trailer_play_button.dart';
 import 'package:riverpodv2/components/trailer_view.dart';
 import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/providers/favorite_movie_state_notifier.dart';
+import 'package:riverpodv2/providers/logger_provider.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/providers/movie_watch_list_state_notifier.dart';
 import 'package:riverpodv2/routes/routers.dart';
+import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/utils/myutils.dart';
 
 class MovieDetailUI extends ConsumerWidget {
@@ -28,10 +33,13 @@ class MovieDetailUI extends ConsumerWidget {
     final castRef = ref.watch(castsFutureProvider(movieId));
     final similarMovieRef = ref.watch(similarMoviesFutureProvider(movieId));
     final movieTrailerRef = ref.watch(movieIdFutureProvider(movieId));
+    final watchListMovieStateNotifierRef =
+        ref.watch(movieWatchListStateNotifierProvider);
     final favoriteMovieStateNotitierRef =
         ref.watch(favoriteMoviesStateNotifierProvider);
     final size = MediaQuery.of(context).size;
-
+    final logRef = ref.watch(loggerProvider);
+    logRef.log(Level.debug, favoriteMovieStateNotitierRef.toString());
     return Scaffold(
         body: movieRef.when(data: (data) {
       return SafeArea(
@@ -81,8 +89,8 @@ class MovieDetailUI extends ConsumerWidget {
                             icon: Icon(
                               Icons.favorite,
                               color: favoriteMovieStateNotitierRef
-                                      
-                                      .contains(data)
+                                      .map((e) => e.id)
+                                      .contains(data.id)
                                   ? Colors.red
                                   : Colors.white,
                             )),
@@ -139,9 +147,16 @@ class MovieDetailUI extends ConsumerWidget {
             RateBar(
                 width: size.width,
                 votes: data.voteCount,
-                addToWatchList: (){
-                  ref.watch(movieWatchListStateNotifierProvider.notifier).add(data);
+                addToWatchList: () {
+                  ref
+                      .watch(movieWatchListStateNotifierProvider.notifier)
+                      .add(data);
                 },
+                color: ref
+                        .read(movieWatchListStateNotifierProvider.notifier)
+                        .isContain(data.id)
+                    ? Colors.red
+                    : Colors.white,
                 averageVote: data.voteAverage),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -198,17 +213,24 @@ class MovieDetailUI extends ConsumerWidget {
                     child: castRef.when(data: (data) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
-                          return InkWell(
-                              onTap: () => GoRouter.of(context)
-                                  .go("/actors/${data[index].id}"),
-                              child: ActorCard(
+                          return OpenContainer(
+                             closedColor: Colors.transparent,
+                            closedElevation: 0,
+                            closedBuilder: (context, action) {
+                              return ActorCard(
                                 actor: Actor(
                                     profilePath: data[index].profilePath ?? "",
                                     adult: data[index].adult,
                                     name: data[index].name,
                                     id: data[index].id,
                                     popularity: data[index].popularity),
-                              ));
+                              );
+                            },
+                            openBuilder: (context, action) {
+                              return ActorDetailUI(actorID: data[index].id);
+                            },
+                          );
+                          
                         },
                         itemCount: data.length,
                         scrollDirection: Axis.horizontal,
@@ -241,10 +263,15 @@ class MovieDetailUI extends ConsumerWidget {
                     child: similarMovieRef.when(data: (data) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () => go(context, "${data[index].id}"),
-                            child: MovieCard(movie: data[index]),
-                          );
+                          return OpenContainer(
+                             closedColor: Colors.transparent,
+                            closedElevation: 0,
+                            closedBuilder: (context, action) {
+                              return MovieCard(movie: data[index]);                            
+                          }, openBuilder: (context, action) {
+                            return MovieDetailUI(movieId: data[index].id);
+                          },);
+                          
                         },
                         itemCount: data.length,
                         scrollDirection: Axis.horizontal,
@@ -270,9 +297,7 @@ class MovieDetailUI extends ConsumerWidget {
         child: Text("Oop!"),
       );
     }, loading: () {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return Center(child: Lottie.asset("assets/lottiefiles/searching.json"));
     }));
   }
 }

@@ -6,12 +6,14 @@ class RateBar extends StatelessWidget {
   final int votes;
   final double averageVote;
   final VoidCallback? addToWatchList;
+  final Color? color;
   const RateBar(
       {this.height = 80,
       required this.width,
       required this.votes,
       required this.averageVote,
       this.addToWatchList,
+      this.color,
       super.key});
 
   @override
@@ -67,7 +69,7 @@ class RateBar extends StatelessWidget {
                     onPressed: addToWatchList,
                     icon: Icon(
                       Icons.post_add_rounded,
-                      color: Colors.yellow,
+                      color:  color,
                     ),
                   ),
                   SizedBox(

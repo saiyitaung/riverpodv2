@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +22,7 @@ class TVShowDetailUI extends ConsumerWidget {
     final tvRef = ref.watch(tvDetailFutureProvider(tvShowID));
     final castRef = ref.watch(castsByTvShowFutureProvider(tvShowID));
     final similarTvShowsRef = ref.watch(similarTvShowsFutureProvider(tvShowID));
-    final trailerKeyRef  = ref.watch(tvTrailerKeyFutureProvider(tvShowID));
+    final trailerKeyRef = ref.watch(tvTrailerKeyFutureProvider(tvShowID));
     final size = MediaQuery.of(context).size;
     return Scaffold(
         body: tvRef.when(data: (data) {
@@ -171,16 +172,33 @@ class TVShowDetailUI extends ConsumerWidget {
                     child: castRef.when(data: (data) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
-                          return InkWell(
-                              onTap: ()=> GoRouter.of(context).go("/actors/${data[index].id}") ,
-                              child: ActorCard(
+                          return OpenContainer(
+                             closedColor: Colors.transparent,
+                            closedElevation: 0,
+                            closedBuilder: (context, action) {
+                              return ActorCard(
                                 actor: Actor(
                                     profilePath: data[index].profilePath ?? "",
                                     adult: data[index].adult,
                                     name: data[index].name,
                                     id: data[index].id,
                                     popularity: data[index].popularity),
-                              ));
+                              );
+                            },
+                            openBuilder: (context, action) {
+                              return ActorDetailUI(actorID: data[index].id);
+                            },
+                          );
+                          // return InkWell(
+                          //     onTap: ()=> GoRouter.of(context).go("/actors/${data[index].id}") ,
+                          //     child: ActorCard(
+                          //       actor: Actor(
+                          //           profilePath: data[index].profilePath ?? "",
+                          //           adult: data[index].adult,
+                          //           name: data[index].name,
+                          //           id: data[index].id,
+                          //           popularity: data[index].popularity),
+                          //     ));
                         },
                         itemCount: data.length,
                         scrollDirection: Axis.horizontal,
@@ -214,10 +232,19 @@ class TVShowDetailUI extends ConsumerWidget {
                     child: similarTvShowsRef.when(data: (data) {
                       return ListView.builder(
                         itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: ()=> GoRouter.of(context).go("/tvshows/${data[index].id}") ,
-                            child: TVShowCard(tvShow: data[index]),
-                          );
+                          return OpenContainer(
+                            closedColor: Colors.transparent,
+                            closedElevation: 0,
+                            closedBuilder: (context, action) {
+                            return TVShowCard(tvShow: data[index]);
+                          }, openBuilder: (context, action) {
+                            return TVShowDetailUI(tvShowID: data[index].id);
+                          },);
+                          // return InkWell(
+                          //   onTap: () => GoRouter.of(context)
+                          //       .go("/tvshows/${data[index].id}"),
+                          //   child: TVShowCard(tvShow: data[index]),
+                          // );
                         },
                         itemCount: data.length,
                         scrollDirection: Axis.horizontal,

@@ -13,7 +13,7 @@ final movieWatchListStateNotifierProvider =
 class MovieWatchListStateNotifier extends StateNotifier<List<MovieDetail>> {
   MovieWatchListStateNotifier(super.state);
   void add(MovieDetail m) {
-    state = [...state];
+    state = [...state,m];
     watchlistMovieBox.put(m.id, m);
   }
 
@@ -23,5 +23,8 @@ class MovieWatchListStateNotifier extends StateNotifier<List<MovieDetail>> {
         if (s.id != m.id) s
     ];
     watchlistMovieBox.delete(m.id);
+  }
+  bool isContain(int id){
+    return state.map((e) => e.id).contains(id);
   }
 }

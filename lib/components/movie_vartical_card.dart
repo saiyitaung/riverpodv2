@@ -90,16 +90,20 @@ class MovieVarticalCard extends StatelessWidget {
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text("director : Gerard Johnstone",
-                          style: TextStyle(fontSize: 13),),
+                          child: Text(
+                            "director : Gerard Johnstone",
+                            style: TextStyle(fontSize: 13),
+                          ),
                         ),
                         SizedBox(
                           height: 5,
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text("Runtime : 1h 20min",
-                          style: TextStyle(fontSize: 13),),
+                          child: Text(
+                            "Runtime : 1h 20min",
+                            style: TextStyle(fontSize: 13),
+                          ),
                         ),
                         SizedBox(
                           height: 5,
@@ -113,9 +117,17 @@ class MovieVarticalCard extends StatelessWidget {
                                   "${movie.voteAverage.toStringAsFixed(1)}",
                                   style: TextStyle(fontSize: 29),
                                 ),
-                                RatingBarIndicator(itemBuilder: ((context, index) {
-                                  return Icon(Icons.star,color: Colors.yellow,);
-                                }),itemCount: 5,rating: movie.voteAverage/2,itemSize: 23,),
+                                RatingBarIndicator(
+                                  itemBuilder: ((context, index) {
+                                    return Icon(
+                                      Icons.star,
+                                      color: Colors.yellow,
+                                    );
+                                  }),
+                                  itemCount: 5,
+                                  rating: movie.voteAverage / 2,
+                                  itemSize: 23,
+                                ),
                               ],
                             )),
                       ],
