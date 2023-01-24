@@ -15,6 +15,8 @@ import 'package:riverpodv2/providers/favorite_movie_state_notifier.dart';
 import 'package:riverpodv2/providers/logger_provider.dart';
 import 'package:riverpodv2/providers/movie_future_provider.dart';
 import 'package:riverpodv2/providers/movie_watch_list_state_notifier.dart';
+import 'package:riverpodv2/providers/network_stat_notifier_provider.dart';
+import 'package:riverpodv2/providers/network_state_notifier.dart';
 import 'package:riverpodv2/routes/routers.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/utils/myutils.dart';
@@ -33,12 +35,22 @@ class MovieDetailUI extends ConsumerWidget {
     final castRef = ref.watch(castsFutureProvider(movieId));
     final similarMovieRef = ref.watch(similarMoviesFutureProvider(movieId));
     final movieTrailerRef = ref.watch(movieIdFutureProvider(movieId));
+    final netStatusRef = ref.watch(netwokStateNotifierProvider);
     final watchListMovieStateNotifierRef =
         ref.watch(movieWatchListStateNotifierProvider);
     final favoriteMovieStateNotitierRef =
         ref.watch(favoriteMoviesStateNotifierProvider);
     final size = MediaQuery.of(context).size;
     final logRef = ref.watch(loggerProvider);
+    ref.listen(netwokStateNotifierProvider, (previous, next) {
+       
+      if (next == NetworkStatus.on) {
+        ref.invalidate(movieDetailFutureProvider);
+        ref.invalidate(castsFutureProvider);
+        ref.invalidate(similarMoviesFutureProvider);
+         
+      }
+    });
     logRef.log(Level.debug, favoriteMovieStateNotitierRef.toString());
     return Scaffold(
         body: movieRef.when(data: (data) {
@@ -293,6 +305,11 @@ class MovieDetailUI extends ConsumerWidget {
         )),
       );
     }, error: (e, _) {
+      if(netStatusRef == NetworkStatus.off){
+        return Center(
+          child: Lottie.asset("assets/lottiefiles/nointernet.json"),
+        );
+      }
       return const Center(
         child: Text("Oop!"),
       );

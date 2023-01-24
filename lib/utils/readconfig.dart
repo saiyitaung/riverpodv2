@@ -11,8 +11,8 @@ class Config{
   static APIConfig? _config;
   
   static APIConfig getAPIConfig(){
-   // final key=Platform.environment['themoviedbAPI'];    
+    final key=Platform.environment['themoviedbAPI'];    
     
-     return _config ?? APIConfig(key: "f1903b18ee0d0f9de6a9c0ce03122f05");
+     return _config ?? APIConfig(key: key);
   }
 }

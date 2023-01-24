@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:riverpodv2/components/movie_card.dart';
 import 'package:riverpodv2/models/actor.dart';
 import 'package:riverpodv2/models/movie.dart';
 import 'package:riverpodv2/providers/actors_future_provider.dart';
+import 'package:riverpodv2/providers/network_stat_notifier_provider.dart';
+import 'package:riverpodv2/providers/network_state_notifier.dart';
 import 'package:riverpodv2/routes/routers.dart';
 import 'package:riverpodv2/ui/movie_detail.dart';
 import 'package:riverpodv2/utils/base.dart';
@@ -17,8 +20,15 @@ class ActorDetailUI extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final movieCastsRef = ref.watch(moviesCastByActorFutureProvider(actorID));
     final actorDetailRef = ref.watch(actorDetailFutureProvider(actorID));
+    final networkStateNotifierRef = ref.watch(netwokStateNotifierProvider);
     final size = MediaQuery.of(context).size;
-   // debugPrint(actor.id.toString());
+    // debugPrint(actor.id.toString());
+    ref.listen(netwokStateNotifierProvider, (previous, next) {
+      if (next == NetworkStatus.on) {
+        ref.invalidate(moviesCastByActorFutureProvider);
+        ref.invalidate(actorDetailFutureProvider);
+      }
+    });
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -184,7 +194,8 @@ class ActorDetailUI extends ConsumerWidget {
                   return ListView.builder(
                     itemBuilder: (context, index) {
                       return InkWell(
-                        onTap: ()=> GoRouter.of(context).go("/$movies/${data[index].id}") ,
+                        onTap: () => GoRouter.of(context)
+                            .go("/$movies/${data[index].id}"),
                         child: MovieCard(
                             movie: Movie(
                                 id: data[index].id,
@@ -217,11 +228,18 @@ class ActorDetailUI extends ConsumerWidget {
             ],
           );
         }, error: (e, st) {
-          debugPrint(st.toString());
-          debugPrint(e.toString());
-          return Center(
-            child: Text("Oop!"),
-          );
+          if (networkStateNotifierRef == NetworkStatus.off) {
+            return Center(
+              child: Lottie.asset("assets/lottiefiles/nointernet.json"),
+            );
+          } else {
+            return SizedBox(
+              width: size.width,
+              height: size.height,
+              child: Center(
+                  child: Lottie.asset("assets/lottiefiles/404notfound.json")),
+            );
+          }
         }, loading: () {
           return Center(
             child: CircularProgressIndicator(),

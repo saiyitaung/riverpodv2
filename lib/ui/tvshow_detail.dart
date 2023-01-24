@@ -1,14 +1,16 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:riverpodv2/components/actor_card.dart';
 import 'package:riverpodv2/components/rate_bar.dart';
 import 'package:riverpodv2/components/trailer_play_button.dart';
 import 'package:riverpodv2/components/trailer_view.dart';
 import 'package:riverpodv2/components/tvshow_card.dart';
 import 'package:riverpodv2/models/actor.dart';
+import 'package:riverpodv2/providers/network_stat_notifier_provider.dart';
+import 'package:riverpodv2/providers/network_state_notifier.dart';
 import 'package:riverpodv2/providers/tvshow_future_provider.dart';
 import 'package:riverpodv2/ui/actor_detail.dart';
 import 'package:riverpodv2/utils/myutils.dart';
@@ -24,6 +26,13 @@ class TVShowDetailUI extends ConsumerWidget {
     final similarTvShowsRef = ref.watch(similarTvShowsFutureProvider(tvShowID));
     final trailerKeyRef = ref.watch(tvTrailerKeyFutureProvider(tvShowID));
     final size = MediaQuery.of(context).size;
+    ref.listen(netwokStateNotifierProvider, (previous, next) {
+      if (next == NetworkStatus.on) {
+        ref.invalidate(tvDetailFutureProvider);
+        ref.invalidate(castsByTvShowFutureProvider);
+        ref.invalidate(similarTvShowsFutureProvider);
+      }
+    });
     return Scaffold(
         body: tvRef.when(data: (data) {
       return SafeArea(
@@ -173,7 +182,7 @@ class TVShowDetailUI extends ConsumerWidget {
                       return ListView.builder(
                         itemBuilder: (context, index) {
                           return OpenContainer(
-                             closedColor: Colors.transparent,
+                            closedColor: Colors.transparent,
                             closedElevation: 0,
                             closedBuilder: (context, action) {
                               return ActorCard(
@@ -189,16 +198,6 @@ class TVShowDetailUI extends ConsumerWidget {
                               return ActorDetailUI(actorID: data[index].id);
                             },
                           );
-                          // return InkWell(
-                          //     onTap: ()=> GoRouter.of(context).go("/actors/${data[index].id}") ,
-                          //     child: ActorCard(
-                          //       actor: Actor(
-                          //           profilePath: data[index].profilePath ?? "",
-                          //           adult: data[index].adult,
-                          //           name: data[index].name,
-                          //           id: data[index].id,
-                          //           popularity: data[index].popularity),
-                          //     ));
                         },
                         itemCount: data.length,
                         scrollDirection: Axis.horizontal,
@@ -236,15 +235,12 @@ class TVShowDetailUI extends ConsumerWidget {
                             closedColor: Colors.transparent,
                             closedElevation: 0,
                             closedBuilder: (context, action) {
-                            return TVShowCard(tvShow: data[index]);
-                          }, openBuilder: (context, action) {
-                            return TVShowDetailUI(tvShowID: data[index].id);
-                          },);
-                          // return InkWell(
-                          //   onTap: () => GoRouter.of(context)
-                          //       .go("/tvshows/${data[index].id}"),
-                          //   child: TVShowCard(tvShow: data[index]),
-                          // );
+                              return TVShowCard(tvShow: data[index]);
+                            },
+                            openBuilder: (context, action) {
+                              return TVShowDetailUI(tvShowID: data[index].id);
+                            },
+                          );
                         },
                         itemCount: data.length,
                         scrollDirection: Axis.horizontal,
@@ -268,9 +264,15 @@ class TVShowDetailUI extends ConsumerWidget {
     }, error: (e, st) {
       debugPrint(e.toString());
       debugPrint(st.toString());
-      return Center(
-        child: Text("Oop!"),
-      );
+      if (ref.watch(netwokStateNotifierProvider) == NetworkStatus.off) {
+        return Center(
+          child: Lottie.asset("assets/lottiefiles/nointernet.json"),
+        );
+      } else {
+        return Center(
+          child: Text("Oop!"),
+        );
+      }
     }, loading: () {
       return Center(
         child: CircularProgressIndicator(),
